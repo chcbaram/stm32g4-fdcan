@@ -22,7 +22,9 @@ bool hwInit(void)
 
   cliInit();
   logInit();
+  swtimerInit();
   ledInit();
+  buttonInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
 

@@ -95,11 +95,14 @@ void PendSV_Handler(void)
 {
 }
 
+extern void swtimerISR(void);
+
 /**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
 {
   HAL_IncTick();
+  swtimerISR();  
 }
 

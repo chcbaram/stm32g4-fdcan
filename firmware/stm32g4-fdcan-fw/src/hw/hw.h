@@ -11,6 +11,8 @@ extern "C" {
 #include "cli.h"
 #include "log.h"
 #include "uart.h"
+#include "button.h"
+#include "swtimer.h"
 
 
 bool hwInit(void);

@@ -29,4 +29,16 @@
 #define      HW_LOG_BOOT_BUF_MAX    1024
 #define      HW_LOG_LIST_BUF_MAX    1024
 
+#define _USE_HW_BUTTON
+#define      HW_BUTTON_MAX_CH       3
+
+#define _USE_HW_SWTIMER
+#define      HW_SWTIMER_MAX_CH      4
+
+
+
+#define _BTN_BOOT                   0   
+#define _BTN_S1                     1   
+#define _BTN_S2                     2  
+
 #endif
