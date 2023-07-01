@@ -13,6 +13,7 @@ extern "C" {
 #include "uart.h"
 #include "button.h"
 #include "swtimer.h"
+#include "can.h"
 
 
 bool hwInit(void);

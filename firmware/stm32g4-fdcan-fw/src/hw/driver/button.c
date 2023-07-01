@@ -56,9 +56,9 @@ static button_pin_t button_pin[BUTTON_MAX_CH] =
 
 static const char *button_name[BUTTON_MAX_CH+1] = 
 {
-  "_BTN_BOOT",   
-  "_BTN_S1",
-  "_BTN_S2",
+  "0_BOOT",   
+  "1_S1",
+  "2_S2",
   "Unknown",
 };
 

@@ -7,7 +7,6 @@
 void apInit(void)
 {
   cliOpen(_DEF_UART1, 115200);
-  logBoot(false);
 }
 
 void apMain(void)
