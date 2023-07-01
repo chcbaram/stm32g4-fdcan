@@ -14,6 +14,9 @@ extern "C" {
 #include "button.h"
 #include "swtimer.h"
 #include "can.h"
+#include "gpio.h"
+#include "spi.h"
+#include "spi_flash.h"
 
 
 bool hwInit(void);

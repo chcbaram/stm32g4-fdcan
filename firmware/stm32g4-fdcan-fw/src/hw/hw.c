@@ -23,7 +23,9 @@ bool hwInit(void)
   cliInit();
   logInit();
   swtimerInit();
+  gpioInit();
   ledInit();
+  spiInit();
   buttonInit();
   uartInit();
   for (int i=0; i<HW_UART_MAX_CH; i++)
@@ -38,7 +40,8 @@ bool hwInit(void)
   logPrintf("Booting..Clock\t\t: %d Mhz\r\n", (int)HAL_RCC_GetSysClockFreq()/1000000);
   logPrintf("\n");
 
+  spiFlashInit();
   canInit();
-  
+
   return true;
 }

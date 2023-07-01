@@ -11,6 +11,9 @@
 
 
 
+#define _USE_HW_SPI_FLASH
+
+
 #define _USE_HW_LED
 #define      HW_LED_MAX_CH          5
 #define      HW_LED_CH_DEBUG        _DEF_LED1
@@ -49,6 +52,12 @@
 #define _USE_HW_CAN
 #define      HW_CAN_MAX_CH          1
 #define      HW_CAN_MSG_RX_BUF_MAX  32
+
+#define _USE_HW_GPIO
+#define      HW_GPIO_MAX_CH         1
+
+#define _USE_HW_SPI
+#define      HW_SPI_MAX_CH          1
 
 
 #endif

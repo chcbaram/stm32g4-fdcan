@@ -144,6 +144,8 @@ bool canInit(void)
     qbufferCreateBySize(&can_tbl[i].q_msg, (uint8_t *)&can_tbl[i].can_msg[0], sizeof(can_msg_t), CAN_MSG_RX_BUF_MAX);
   }
 
+ logPrintf("[OK] canInit()\n");
+
 #ifdef _USE_HW_CLI
   cliAdd("can", cliCan);
 #endif
