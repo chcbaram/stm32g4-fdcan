@@ -19,7 +19,7 @@ static void cliLed(cli_args_t *args);
 #endif
 
 
-static led_tbl_t led_tbl[LED_MAX_CH] = 
+static const led_tbl_t led_tbl[LED_MAX_CH] = 
 {
   {GPIOB, GPIO_PIN_2,  GPIO_PIN_RESET, GPIO_PIN_SET},   // 0. DEBUG
   {GPIOC, GPIO_PIN_10, GPIO_PIN_RESET, GPIO_PIN_SET},   // 1. RX

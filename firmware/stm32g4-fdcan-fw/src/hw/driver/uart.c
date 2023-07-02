@@ -15,7 +15,7 @@ typedef struct
   bool is_open;
   uint32_t baud;
 
-  uint8_t  rx_buf[UART_RX_BUF_LENGTH];
+  uint8_t  *rx_buf;
   qbuffer_t qbuffer;
   UART_HandleTypeDef *p_huart;
   DMA_HandleTypeDef  *p_hdma_rx;
@@ -60,6 +60,11 @@ const static uart_hw_t uart_hw_tbl[UART_MAX_CH] =
   };
 
 
+static uint8_t  rx_buf_1[UART_RX_BUF_LENGTH];
+static uint8_t  rx_buf_2[UART_RX_BUF_LENGTH];
+static uint8_t  rx_buf_3[UART_RX_BUF_LENGTH];
+
+
 
 
 
@@ -72,6 +77,10 @@ bool uartInit(void)
     uart_tbl[i].rx_cnt = 0;
     uart_tbl[i].tx_cnt = 0;    
   }
+
+  uart_tbl[_DEF_UART1].rx_buf = rx_buf_1;
+  uart_tbl[_DEF_UART2].rx_buf = rx_buf_2;
+  uart_tbl[_DEF_UART3].rx_buf = rx_buf_3;
 
   is_init = true;
 

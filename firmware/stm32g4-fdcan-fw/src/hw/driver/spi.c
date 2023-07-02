@@ -34,9 +34,11 @@ typedef struct
 
 spi_t spi_tbl[SPI_MAX_CH];
 
-
-
 SPI_HandleTypeDef hspi1;
+
+
+
+
 
 
 bool spiInit(void)
