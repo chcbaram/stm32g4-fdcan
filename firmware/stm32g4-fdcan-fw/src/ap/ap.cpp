@@ -8,7 +8,9 @@ static void cliUpdate(void);
 
 void apInit(void)
 {
+  #ifdef _USE_HW_CLI
   cliOpen(_DEF_UART1, 115200);
+  #endif
 }
 
 void apMain(void)
@@ -31,6 +33,7 @@ void apMain(void)
 
 void cliUpdate(void)
 {
+  #ifdef _USE_HW_CLI
   uint8_t cli_ch;
 
 
@@ -47,4 +50,5 @@ void cliUpdate(void)
     cliOpen(cli_ch, 0);
   }
   cliMain();
+  #endif
 }

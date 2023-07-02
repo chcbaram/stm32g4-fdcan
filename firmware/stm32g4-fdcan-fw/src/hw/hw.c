@@ -21,7 +21,9 @@ bool hwInit(void)
 {
   bspInit();
 
+  #ifdef _USE_HW_CLI
   cliInit();
+  #endif
   logInit();
   swtimerInit();
   gpioInit();

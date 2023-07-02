@@ -28,6 +28,7 @@ static const led_tbl_t led_tbl[LED_MAX_CH] =
   {GPIOB, GPIO_PIN_1,  GPIO_PIN_RESET, GPIO_PIN_SET},   // 4. RS485
 };
 
+#ifdef _USE_HW_CLI
 static const char *led_name[LED_MAX_CH+1] = 
 {
   "0_DEBUG",   
@@ -37,6 +38,7 @@ static const char *led_name[LED_MAX_CH+1] =
   "4_RS485",
   "Unknown",
 };
+#endif
 
 
 bool ledInit(void)
