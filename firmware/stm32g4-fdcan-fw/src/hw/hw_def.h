@@ -24,10 +24,11 @@
 
 
 #define _USE_HW_UART
-#define      HW_UART_MAX_CH         2
+#define      HW_UART_MAX_CH         4
 #define      HW_UART_CH_DEBUG       _DEF_UART1
 #define      HW_UART_CH_RS485       _DEF_UART2
-
+#define      HW_UART_CH_EXT         _DEF_UART3
+#define      HW_UART_CH_USB         _DEF_UART4
 
 #define _USE_HW_CLI
 #define      HW_CLI_CMD_LIST_MAX    32
@@ -58,6 +59,11 @@
 
 #define _USE_HW_SPI
 #define      HW_SPI_MAX_CH          1
+
+#define _USE_HW_USB
+#define _USE_HW_CDC
+#define      HW_USE_CDC             1
+#define      HW_USE_MSC             0
 
 
 #endif

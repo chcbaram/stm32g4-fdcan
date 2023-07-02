@@ -17,7 +17,8 @@ extern "C" {
 #include "gpio.h"
 #include "spi.h"
 #include "spi_flash.h"
-
+#include "usb.h"
+#include "cdc.h"
 
 bool hwInit(void);
 

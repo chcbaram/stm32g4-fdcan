@@ -46,13 +46,17 @@ static uart_tbl_t uart_tbl[UART_MAX_CH];
 
 static UART_HandleTypeDef huart1;
 static UART_HandleTypeDef huart2;
+static UART_HandleTypeDef huart3;
 static DMA_HandleTypeDef hdma_usart1_rx;
 static DMA_HandleTypeDef hdma_usart2_rx;
+static DMA_HandleTypeDef hdma_usart3_rx;
 
 const static uart_hw_t uart_hw_tbl[UART_MAX_CH] = 
   {
     {"USART1 DEBUG  ", USART1, &huart1, &hdma_usart1_rx, NULL, false},
     {"USART2 RS485  ", USART2, &huart2, &hdma_usart2_rx, NULL, true},
+    {"USART3 EXT    ", USART3, &huart3, &hdma_usart3_rx, NULL, true},
+    {"USB    USB    ", NULL, NULL, NULL, NULL, true},  
   };
 
 
@@ -105,6 +109,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   {
     case _DEF_UART1:
     case _DEF_UART2:
+    case _DEF_UART3:
       uart_tbl[ch].baud      = baud;
 
       uart_tbl[ch].p_huart   = uart_hw_tbl[ch].p_huart;
@@ -184,9 +189,14 @@ uint32_t uartAvailable(uint8_t ch)
   {
     case _DEF_UART1:
     case _DEF_UART2:
+    case _DEF_UART3:
       uart_tbl[ch].qbuffer.in = (uart_tbl[ch].qbuffer.len - ((DMA_Channel_TypeDef *)uart_tbl[ch].p_hdma_rx->Instance)->CNDTR);
       ret = qbufferAvailable(&uart_tbl[ch].qbuffer);      
       break;   
+
+    case _DEF_UART4:
+      ret = cdcAvailable();
+      break;       
   }
 
   return ret;
@@ -219,8 +229,13 @@ uint8_t uartRead(uint8_t ch)
   {
     case _DEF_UART1:
     case _DEF_UART2:
+    case _DEF_UART3:
       qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
       break;    
+
+    case _DEF_UART4:
+      ret = cdcRead();
+      break;         
   }
   uart_tbl[ch].rx_cnt++;
 
@@ -236,11 +251,16 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
   {
     case _DEF_UART1:
     case _DEF_UART2:
+    case _DEF_UART3:
       if (HAL_UART_Transmit(uart_tbl[ch].p_huart, p_data, length, 100) == HAL_OK)
       {
         ret = length;
       }
-      break;     
+      break;    
+
+    case _DEF_UART4:
+      ret = cdcWrite(p_data, length);
+      break;          
   }
   uart_tbl[ch].tx_cnt += ret;
 
@@ -289,7 +309,10 @@ uint32_t uartGetBaud(uint8_t ch)
 
   if (ch >= UART_MAX_CH) return 0;
 
-  ret = uart_tbl[ch].baud;
+  if (ch == HW_UART_CH_USB)
+    ret = cdcGetBaud();
+  else
+    ret = uart_tbl[ch].baud;
   
   return ret;
 }
@@ -406,6 +429,50 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart2_rx);
   }
 
+  if(uartHandle->Instance==USART3)
+  {
+  /** Initializes the peripherals clocks
+  */
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART3;
+    PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    /* USART3 clock enable */
+    __HAL_RCC_USART3_CLK_ENABLE();
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**USART3 GPIO Configuration
+    PB10     ------> USART3_TX
+    PB11     ------> USART3_RX
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* USART3 DMA Init */
+    /* USART3_RX Init */
+    hdma_usart3_rx.Instance = DMA1_Channel3;
+    hdma_usart3_rx.Init.Request = DMA_REQUEST_USART3_RX;
+    hdma_usart3_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart3_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart3_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart3_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart3_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart3_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart3_rx.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_usart3_rx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart3_rx);
+  }
 }
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
@@ -424,6 +491,37 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     /* USART1 DMA DeInit */
     HAL_DMA_DeInit(uartHandle->hdmarx);
   }
+
+  if(uartHandle->Instance==USART2)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_USART2_CLK_DISABLE();
+
+    /**USART2 GPIO Configuration
+    PA1     ------> USART2_DE
+    PA2     ------> USART2_TX
+    PA3     ------> USART2_RX
+    */
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+
+    /* USART2 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmarx);
+  }
+
+  if(uartHandle->Instance==USART3)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_USART3_CLK_DISABLE();
+
+    /**USART3 GPIO Configuration
+    PB10     ------> USART3_TX
+    PB11     ------> USART3_RX
+    */
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_10|GPIO_PIN_11);
+
+    /* USART3 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmarx);
+  }  
 }
 
 #ifdef _USE_HW_CLI

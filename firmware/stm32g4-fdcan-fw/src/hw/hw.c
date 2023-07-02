@@ -16,6 +16,7 @@ volatile const firm_ver_t firm_ver __attribute__((section(".version"))) =
 
 
 
+
 bool hwInit(void)
 {
   bspInit();
@@ -42,6 +43,9 @@ bool hwInit(void)
 
   spiFlashInit();
   canInit();
+  usbInit();
+  usbBegin(USB_CDC_MODE);
+  cdcInit();
 
   return true;
 }

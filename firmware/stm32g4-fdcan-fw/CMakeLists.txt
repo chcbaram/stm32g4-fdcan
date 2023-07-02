@@ -28,6 +28,7 @@ file(GLOB_RECURSE SRC_FILES_RECURSE CONFIGURE_DEPENDS
   src/common/*.c
   src/hw/*.c
   src/lib/STM32G4xx_HAL_Driver/Src/*.c
+  src/lib/STM32_USB_Device_Library/Core/Src/*.c
 )
 
 add_executable(${EXECUTABLE} 
@@ -48,11 +49,14 @@ target_include_directories(${EXECUTABLE} PRIVATE
   src/common/hw/include 
   src/hw
   src/hw/driver
+  src/hw/driver/usb
+  src/hw/driver/usb/usb_cdc  
   src/lib
 
   src/lib/CMSIS/Include
   src/lib/CMSIS/Device/ST/STM32G4xx/Include
   src/lib/STM32G4xx_HAL_Driver/Inc
+  src/lib/STM32_USB_Device_Library/Core/Inc
 )
 
 target_compile_definitions(${EXECUTABLE} PRIVATE
