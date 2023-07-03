@@ -1,0 +1,19 @@
+{
+	"folders": [
+    {
+      "name": "firmware",
+      "path": "../../",
+    }
+  ],
+  "settings": {
+    "C_Cpp.autoAddFileAssociations": false,
+    "files.exclude": {
+      "**/.DS_Store": true,
+      "**/.hg": true,
+      "**/.svn": true,
+      "**/CVS": true,
+      "**/prj": true,
+      "**/Thumbs.db": true
+    }
+  }
+}
