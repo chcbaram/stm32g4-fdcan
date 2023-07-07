@@ -29,6 +29,7 @@ file(GLOB_RECURSE SRC_FILES_RECURSE CONFIGURE_DEPENDS
   src/hw/*.c
   src/lib/STM32G4xx_HAL_Driver/Src/*.c
   src/lib/STM32_USB_Device_Library/Core/Src/*.c
+  src/lib/littlefs/*.c
 )
 
 add_executable(${EXECUTABLE} 
@@ -74,7 +75,7 @@ target_compile_options(${EXECUTABLE} PRIVATE
 
   -Wall
   -g3
-  -Og
+  -Os
   )
 
 target_link_options(${EXECUTABLE} PRIVATE

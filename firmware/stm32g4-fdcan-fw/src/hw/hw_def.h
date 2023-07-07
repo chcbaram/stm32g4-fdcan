@@ -12,6 +12,7 @@
 
 
 #define _USE_HW_SPI_FLASH
+#define _USE_HW_FLASH
 
 
 #define _USE_HW_LED
@@ -64,6 +65,8 @@
 #define _USE_HW_CDC
 #define      HW_USE_CDC             1
 #define      HW_USE_MSC             0
+
+
 
 
 #endif

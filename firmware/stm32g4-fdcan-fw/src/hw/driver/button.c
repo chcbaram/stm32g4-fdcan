@@ -381,7 +381,7 @@ uint32_t buttonGetReleasedTime(uint8_t ch)
 
 bool buttonEventClear(button_event_t *p_event)
 {
-  bool ret;
+  bool ret = true;
 
 
   if (is_enable == false) return false;

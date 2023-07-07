@@ -202,7 +202,7 @@ bool spiFlashErase(uint32_t addr, uint32_t length)
 
 
   flash_length = W25Q128FV_FLASH_SIZE;
-  block_size   = W25Q128FV_SUBSECTOR_SIZE;
+  block_size   = W25Q128FV_SECTOR_SIZE;
 
 
   if ((addr > flash_length) || ((addr+length) > flash_length))
@@ -221,7 +221,7 @@ bool spiFlashErase(uint32_t addr, uint32_t length)
 
   for (i=block_begin; i<=block_end; i++)
   {
-    ret = spiFlashEraseSector(block_size*i);
+    ret = spiFlashEraseBlock(block_size*i);
     if (ret == false)
     {
       break;
@@ -291,7 +291,7 @@ bool spiFlashEraseSector(uint32_t sector_addr)
 
 uint32_t spiFlashGetAddr(void)
 {
-  return 0;
+  return 0x90000000;
 }
 
 uint32_t spiFlashGetLength(void)

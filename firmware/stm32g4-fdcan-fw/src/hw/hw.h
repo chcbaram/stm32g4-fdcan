@@ -19,6 +19,9 @@ extern "C" {
 #include "spi_flash.h"
 #include "usb.h"
 #include "cdc.h"
+#include "flash.h"
+#include "fs.h"
+#include "nvs.h"
 
 bool hwInit(void);
 

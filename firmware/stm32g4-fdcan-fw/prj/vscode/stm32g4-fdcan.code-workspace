@@ -14,6 +14,7 @@
       "**/CVS": true,
       "**/prj": true,
       "**/Thumbs.db": true
-    }
+    },
+    "cortex-debug.variableUseNaturalFormat": false
   }
 }
