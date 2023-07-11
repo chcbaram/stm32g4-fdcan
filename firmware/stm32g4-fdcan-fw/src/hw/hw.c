@@ -45,7 +45,7 @@ bool hwInit(void)
 
   spiFlashInit();
   flashInit();
-
+  eepromInit();
   canInit();
   usbInit();
   usbBegin(USB_CDC_MODE);

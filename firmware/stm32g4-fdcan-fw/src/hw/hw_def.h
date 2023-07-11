@@ -14,7 +14,6 @@
 #define _USE_HW_SPI_FLASH
 #define _USE_HW_FLASH
 
-
 #define _USE_HW_LED
 #define      HW_LED_MAX_CH          5
 #define      HW_LED_CH_DEBUG        _DEF_LED1
@@ -66,7 +65,8 @@
 #define      HW_USE_CDC             1
 #define      HW_USE_MSC             0
 
-
+#define _USE_HW_EEPROM
+#define      HW_EEPROM_MAX_PAGES    4
 
 
 #endif

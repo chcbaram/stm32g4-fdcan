@@ -19,6 +19,9 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   src/*.c
   src/bsp/*.c
   src/bsp/device/*.c
+
+  src/lib/EEPROM_Emul/Core/*.c
+  src/lib/EEPROM_Emul/Porting/STM32G4/*.c
 )
 
 file(GLOB_RECURSE SRC_FILES_RECURSE CONFIGURE_DEPENDS
@@ -52,12 +55,17 @@ target_include_directories(${EXECUTABLE} PRIVATE
   src/hw/driver
   src/hw/driver/usb
   src/hw/driver/usb/usb_cdc  
+  src/hw/driver/eeprom
   src/lib
 
   src/lib/CMSIS/Include
   src/lib/CMSIS/Device/ST/STM32G4xx/Include
   src/lib/STM32G4xx_HAL_Driver/Inc
   src/lib/STM32_USB_Device_Library/Core/Inc
+
+  src/lib/EEPROM_Emul/Core
+  src/lib/EEPROM_Emul/Porting/STM32G4
+
 )
 
 target_compile_definitions(${EXECUTABLE} PRIVATE
