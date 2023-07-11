@@ -145,7 +145,7 @@ bool eepromRead(uint32_t addr, uint8_t *p_data, uint32_t length)
 
 bool eepromWrite(uint32_t addr, uint8_t *p_data, uint32_t length)
 {
-  bool ret;
+  bool ret = false;
   uint32_t i;
 
 
