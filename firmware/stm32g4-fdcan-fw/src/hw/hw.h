@@ -25,6 +25,8 @@ extern "C" {
 #include "eeprom.h"
 #include "rtc.h"
 #include "reset.h"
+#include "cmd.h"
+#include "util.h"
 
 
 bool hwInit(void);
