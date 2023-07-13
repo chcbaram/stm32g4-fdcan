@@ -7,6 +7,21 @@
     {
       "cwd": "${workspaceRoot}",
       "executable": "./build/stm32g4-fdcan-fw.elf",
+      "name": "Debug with PICO",
+      "request": "launch",
+      "type": "cortex-debug",
+      "servertype": "openocd",
+      "configFiles": [
+        "interface/cmsis-dap.cfg",
+        "target/stm32g4x.cfg"
+      ],
+      "searchDir": [],
+      "runToEntryPoint": "main",
+      "showDevDebugOutput": "none"
+    },
+    {
+      "cwd": "${workspaceRoot}",
+      "executable": "./build/stm32g4-fdcan-fw.elf",
       "name": "Debug with OpenOCD",
       "request": "launch",
       "type": "cortex-debug",
