@@ -23,6 +23,9 @@ extern "C" {
 #include "fs.h"
 #include "nvs.h"
 #include "eeprom.h"
+#include "rtc.h"
+#include "reset.h"
+
 
 bool hwInit(void);
 
