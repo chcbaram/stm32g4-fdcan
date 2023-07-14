@@ -291,7 +291,7 @@ bool spiFlashEraseSector(uint32_t sector_addr)
 
 uint32_t spiFlashGetAddr(void)
 {
-  return 0x90000000;
+  return HW_SPI_FLASH_ADDR;
 }
 
 uint32_t spiFlashGetLength(void)

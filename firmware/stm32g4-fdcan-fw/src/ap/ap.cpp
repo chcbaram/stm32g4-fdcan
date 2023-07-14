@@ -1,4 +1,5 @@
 #include "ap.h"
+#include "cmd/cmd_thread.h"
 
 
 static void cliUpdate(void);
@@ -11,6 +12,8 @@ void apInit(void)
   #ifdef _USE_HW_CLI
   cliOpen(_DEF_UART1, 115200);
   #endif
+
+  cmdThreadInit();
 }
 
 void apMain(void)
@@ -27,6 +30,7 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }    
 
+    cmdThreadUpdate();
     cliUpdate();
   }
 }
