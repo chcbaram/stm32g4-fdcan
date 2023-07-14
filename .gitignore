@@ -10,3 +10,6 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 firmware/stm32g4-fdcan-fw/prj/stm32cubeide/Debug/
+software/fdcan-loader/build/
+firmware/stm32g4-fdcan-fw/build/
+firmware/stm32g4-fdcan-fw/prj/stm32cubeide/.settings/language.settings.xml
