@@ -11,7 +11,7 @@
 
 
 
-#define _USE_HW_SPI_FLASH
+
 #define _USE_HW_FLASH
 
 
@@ -79,6 +79,9 @@
 #define _USE_HW_CMD
 #define      HW_CMD_MAX_DATA_LENGTH 1024
 
+#define _USE_HW_SPI_FLASH
+#define      HW_SPI_FLASH_ADDR      0x90000000
+
 
 #define FLASH_SIZE_TAG              0x400
 #define FLASH_SIZE_VER              0x400
@@ -87,7 +90,7 @@
 #define FLASH_ADDR_BOOT             0x08000000
 #define FLASH_ADDR_FIRM             0x08006000
 
-#define FLASH_ADDR_UPDATE           0x90800000
+#define FLASH_ADDR_UPDATE           0x90000000
 
 
 #endif
