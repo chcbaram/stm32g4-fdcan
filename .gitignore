@@ -13,3 +13,5 @@ firmware/stm32g4-fdcan-fw/prj/stm32cubeide/Debug/
 software/fdcan-loader/build/
 firmware/stm32g4-fdcan-fw/build/
 firmware/stm32g4-fdcan-fw/prj/stm32cubeide/.settings/language.settings.xml
+firmware/stm32g4-fdcan-boot/prj/stm32cubeide/Debug/
+firmware/stm32g4-fdcan-boot/prj/stm32cubeide/.settings/language.settings.xml
