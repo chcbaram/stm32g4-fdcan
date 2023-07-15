@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+  "tasks": [
+    {
+      "label": "configure",
+      "type": "shell",
+      "command": "cmake -S . -B build",
+      "problemMatcher": []
+    },  
+    {
+      "label": "configure for win",
+      "type": "shell",
+      "command": "cmake -S . -B build -G 'MinGW Makefiles'",
+      "problemMatcher": []
+    },       
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "cmake --build build -j10",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "cmake --build build --target clean",
+      "problemMatcher": [],
+    }    
+  ]
+}

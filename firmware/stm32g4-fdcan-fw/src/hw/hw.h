@@ -27,6 +27,7 @@ extern "C" {
 #include "reset.h"
 #include "cmd.h"
 #include "util.h"
+#include "fault.h"
 
 
 bool hwInit(void);
