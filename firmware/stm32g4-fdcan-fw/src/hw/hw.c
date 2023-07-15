@@ -45,6 +45,7 @@ bool hwInit(void)
 
   rtcInit();
   resetInit();
+  faultInit();
   spiFlashInit();
   flashInit();
   eepromInit();

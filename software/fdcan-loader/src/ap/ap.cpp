@@ -35,7 +35,7 @@ uint32_t getFileCrc(char *file_name);
 
 void apInit(void)
 {
-  logPrintf("FDCAN-LOADER V230715R1\n\n");
+  logPrintf("FDCAN-LOADER V230715R2\n\n");
 
   arg_option.mode = MODE_DOWN;
   arg_option.is_udp = false;
