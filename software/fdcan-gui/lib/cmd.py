@@ -1,7 +1,10 @@
 import time
-import socket
-from enum import Enum
+import serial
+import serial.tools.list_ports as sp
+
 from PySide6.QtCore import QThread, QObject, Signal
+from lib.err_code import *
+from queue import Queue
 
 
 CMD_STX0 = 0x02
@@ -13,20 +16,6 @@ PKT_TYPE_EVENT = 0x02
 PKT_TYPE_LOG   = 0x03
 PKT_TYPE_PING  = 0x04
 
-BOOT_CMD_INFO         = 0x0000
-BOOT_CMD_VERSION      = 0x0001
-BOOT_CMD_FLASH_ERASE  = 0x0003
-BOOT_CMD_FLASH_WRITE  = 0x0004
-BOOT_CMD_FLASH_READ   = 0x0005
-BOOT_CMD_FW_VER       = 0x0006
-BOOT_CMD_FW_ERASE     = 0x0007
-BOOT_CMD_FW_WRITE     = 0x0008
-BOOT_CMD_FW_READ      = 0x0009
-BOOT_CMD_FW_VERIFY    = 0x000A
-BOOT_CMD_FW_UPDATE    = 0x000B
-BOOT_CMD_FW_JUMP      = 0x000C
-BOOT_CMD_FW_BEGIN     = 0x000D
-BOOT_CMD_FW_END       = 0x000E
 
 
 
@@ -43,22 +32,20 @@ class CmdPacket:
     self.check_sum_recv = 0
     self.index = 0
     self.data = bytearray(4096)    
-    self.str_ip = ""
-    self.str_port = ""
 
 
 class CmdThread(QThread):
-  rxd_sig = Signal(CmdPacket)
+  event_sig = Signal(CmdPacket)
 
-  def __init__(self, sock):
+  def __init__(self, port, resp_q):
     super().__init__()
     self.working = True
     self.request_exit = False    
-    self.sock = sock
+    self.port = port
     self.packet_state = 0
     self.packet = CmdPacket()
-    self.rxd_packet = CmdPacket()
-    self.is_rxd_packet = False
+
+    self.resp_q = resp_q
 
   def __del__(self):
     pass
@@ -66,14 +53,15 @@ class CmdThread(QThread):
   def run(self):
     while self.working:
       try:
-        data, addr = self.sock.recvfrom(1024)
-        self.parsingPacket(data, addr)
+        data =  self.port.read()
+        self.parsingPacket(data)
       except Exception as e:
-        if self.request_exit == True:
-          self.working = False
+        time.sleep(0.001)
+      if self.request_exit == True:
+        self.working = False
 
   def setRxdSignal(self, receive_func):
-    self.rxd_sig.connect(receive_func)
+    self.event_sig.connect(receive_func)
 
   def stop(self):
     self.request_exit = True
@@ -87,7 +75,7 @@ class CmdThread(QThread):
     self.is_rxd_packet = False
     return self.rxd_packet
 
-  def parsingPacket(self, rx_bytes, addr):
+  def parsingPacket(self, rx_bytes):
     CMD_STATE_WAIT_STX0      = 0
     CMD_STATE_WAIT_STX1      = 1
     CMD_STATE_WAIT_TYPE      = 2
@@ -167,14 +155,18 @@ class CmdThread(QThread):
           self.packet.check_sum = ((~self.packet.check_sum) + 1) & 0xFF
    
           if self.packet.check_sum == self.packet.check_sum_recv:
-            self.packet.err_code = 0
-            self.packet.str_ip = str(addr[0])
-            self.packet.str_port = str(addr[1])
-            # self.rxd_sig.emit(self.packet)
-            self.rxd_packet = self.packet
-            self.is_rxd_packet = True
+            self.packet.err_code = OK
+            try:
+              if self.packet.type == PKT_TYPE_RESP:
+                self.resp_q.put(self.packet, 1)
+              else:
+                print("EVENT")
+                self.event_sig.emit(self.packet)
+            except Exception as e:
+              print(e)
+
           else:
-            self.packet.err_code = 0x0021
+            self.packet.err_code = ERR_CMD_CHECKSUM
           self.packet_state = CMD_STATE_WAIT_STX0  
 
     except Exception as e:
@@ -185,32 +177,51 @@ class CmdThread(QThread):
 class Cmd:
   def __init__(self):
     self.is_init = False
-    self.send_ip = ""
-    self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    self.rxd_thread = CmdThread(self.sock)    
+    self.is_open = False
+    self.resp_q = Queue(1)
+
+    self.uart_port = serial.Serial(timeout=0.1)   
+    self.rxd_thread = CmdThread(self.uart_port, self.resp_q)    
     self.rxd_thread.start()    
     self.rxd_thread.setRxdSignal(self.rxdPacketSignal)
 
-    self.is_rxd_packet = False
-    self.rxd_packet = CmdPacket()
-
   def __del__(self):
-    self.sock.close()
+    self.uart_port.close()
     self.rxd_thread.stop()
     print("cmd->del()")
 
   def init(self):
     return
   
-  def open(self):
-    return
+  def open(self, port, baud):
+    self.port = port
+    self.baud = baud
+    try :
+      self.uart_port.port = port
+      self.uart_port.baudrate = baud
+      self.uart_port.open()
+      self.is_open = True
+      # self.uart_port.timeout = 0.1
+      print('Uart::open() OK')
+    except :
+      self.is_open = False
+      print('Uart::open() Fail')
+
+    return self.is_open
 
   def stop(self):
-    self.sock.close()
     self.rxd_thread.stop()
     print("cmd->stop()")
     return
+
+  def close(self):  
+    if self.uart_port is not None:
+      if self.uart_port.is_open == True:
+        self.is_open = False
+        self.uart_port.cancel_read()
+        self.uart_port.cancel_write() 
+        self.uart_port.close()        
+        print('Uart::close()')
 
   def send(self, type, cmd, err_code, data, length):
     index = 0
@@ -239,29 +250,26 @@ class Cmd:
     buffer[index] = check_sum & 0xFF
     index += 1
 
-    if len(self.send_ip) == 0:
-      tx_len = self.sock.sendto(buffer, ("255.255.255.255", 5000))
-    else:
-      tx_len = self.sock.sendto(buffer, (self.send_ip, 5000))
+    self.uart_port.write_timeout = 5
+    tx_len = self.uart_port.write(buffer)
 
   def sendCmd(self, cmd, data, length):
     self.send(PKT_TYPE_CMD, cmd, 0, data, length)
 
   def sendCmdRxResp(self, cmd, data, length, timeout_ms):
-    self.is_rxd_packet = False
+    if self.resp_q.qsize() > 0:
+      self.resp_q.get()
     self.sendCmd(cmd, data, length)
 
-    pre_time = millis()
-    while True:
-      if self.rxd_thread.is_rxd_packet == True:
-        self.is_rxd_packet = True
-        self.rxd_packet = self.rxd_thread.getPacket()
-        break
-      if millis()-pre_time > timeout_ms:
-        break
-      # time.sleep(0.001)
+    ret = False 
 
-    return self.is_rxd_packet, self.rxd_packet
+    try:
+      ret_packet = self.resp_q.get(timeout=timeout_ms/1000)
+      ret = True
+    except:
+      ret_packet = None
+
+    return ret, ret_packet
 
 
   def rxdPacketSignal(self, packet: CmdPacket):

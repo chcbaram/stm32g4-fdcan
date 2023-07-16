@@ -67,6 +67,13 @@
         <widget class="QComboBox" name="combo_device"/>
        </item>
        <item>
+        <widget class="QPushButton" name="btn_connect">
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPlainTextEdit" name="text_device_info">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
@@ -171,16 +178,16 @@
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="radio_usb">
+              <widget class="QPushButton" name="btn_down_stop">
                <property name="text">
-                <string>USB</string>
+                <string>Stop</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="radio_debug">
+              <widget class="QPushButton" name="btn_log_clear">
                <property name="text">
-                <string>DEBUG</string>
+                <string>Clear</string>
                </property>
               </widget>
              </item>
@@ -219,30 +226,10 @@
             </widget>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="text_file_info">
-             <property name="cursorWidth">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
+            <widget class="QPlainTextEdit" name="log_text"/>
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="log_text"/>
         </item>
        </layout>
       </widget>

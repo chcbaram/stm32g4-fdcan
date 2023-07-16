@@ -73,6 +73,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.combo_device)
 
+        self.btn_connect = QPushButton(self.frame)
+        self.btn_connect.setObjectName(u"btn_connect")
+
+        self.verticalLayout_2.addWidget(self.btn_connect)
+
         self.text_device_info = QPlainTextEdit(self.frame)
         self.text_device_info.setObjectName(u"text_device_info")
         sizePolicy = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Minimum)
@@ -139,15 +144,15 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.btn_down)
 
-        self.radio_usb = QRadioButton(self.frame_2)
-        self.radio_usb.setObjectName(u"radio_usb")
+        self.btn_down_stop = QPushButton(self.frame_2)
+        self.btn_down_stop.setObjectName(u"btn_down_stop")
 
-        self.horizontalLayout_4.addWidget(self.radio_usb)
+        self.horizontalLayout_4.addWidget(self.btn_down_stop)
 
-        self.radio_debug = QRadioButton(self.frame_2)
-        self.radio_debug.setObjectName(u"radio_debug")
+        self.btn_log_clear = QPushButton(self.frame_2)
+        self.btn_log_clear.setObjectName(u"btn_log_clear")
 
-        self.horizontalLayout_4.addWidget(self.radio_debug)
+        self.horizontalLayout_4.addWidget(self.btn_log_clear)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -168,23 +173,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_4.addWidget(self.prog_bar_down)
 
-        self.text_file_info = QPlainTextEdit(self.frame_2)
-        self.text_file_info.setObjectName(u"text_file_info")
-        self.text_file_info.setCursorWidth(0)
+        self.log_text = QPlainTextEdit(self.frame_2)
+        self.log_text.setObjectName(u"log_text")
 
-        self.verticalLayout_4.addWidget(self.text_file_info)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_4.addItem(self.verticalSpacer_2)
+        self.verticalLayout_4.addWidget(self.log_text)
 
 
         self.verticalLayout_3.addWidget(self.frame_2)
-
-        self.log_text = QPlainTextEdit(self.tab_update)
-        self.log_text.setObjectName(u"log_text")
-
-        self.verticalLayout_3.addWidget(self.log_text)
 
         self.tabWidget.addTab(self.tab_update, "")
         self.tab_info = QWidget()
@@ -228,10 +223,11 @@ class Ui_MainWindow(object):
         self.btn_scan.setText(QCoreApplication.translate("MainWindow", u"Scan", None))
         self.radio_scan_fdcan.setText(QCoreApplication.translate("MainWindow", u"FDCAN", None))
         self.radio_scan_uart.setText(QCoreApplication.translate("MainWindow", u"UART", None))
+        self.btn_connect.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.btn_open.setText(QCoreApplication.translate("MainWindow", u"Open", None))
         self.btn_down.setText(QCoreApplication.translate("MainWindow", u"Download", None))
-        self.radio_usb.setText(QCoreApplication.translate("MainWindow", u"USB", None))
-        self.radio_debug.setText(QCoreApplication.translate("MainWindow", u"DEBUG", None))
+        self.btn_down_stop.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
+        self.btn_log_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_update), QCoreApplication.translate("MainWindow", u"UPDATE", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_info), QCoreApplication.translate("MainWindow", u"CAN", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))

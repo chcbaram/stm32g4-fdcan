@@ -50,7 +50,7 @@ class LogWidget(QWidget):
 
   def printLog(self, str): 
     if self.is_timelog == True:
-      tm = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+      tm = time.strftime('%m-%d %H:%M:%S', time.localtime(time.time()))
       #str = str.replace('\n', '')
       self.log.appendPlainText(f'[{tm}] {str}')
     else:
