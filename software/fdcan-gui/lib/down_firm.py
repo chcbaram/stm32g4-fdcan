@@ -81,6 +81,12 @@ class DownFirm(QThread):
       if firm_ver[0] != VERSION_MAGIC_NUMBER:
         raise DownError("Err - firm magic")
 
+      if "STM32G4-FDCAN-FW" not in firm_ver[2].decode("utf-8"):
+        self.log_sig.emit('firm not match')
+        self.log_sig.emit('     STM32G4-FDCAN-FW')
+        self.log_sig.emit('     %s' % firm_ver[2].decode("utf-8"))
+        raise DownError("Err - firm name\ndd")
+
       self.log_sig.emit('firm ver    : %s' % firm_ver[1].decode("utf-8"))
       self.log_sig.emit('firm name   : %s' % firm_ver[2].decode("utf-8"))
       self.log_sig.emit('firm addr   : %s' % hex(firm_ver[3]).upper())
