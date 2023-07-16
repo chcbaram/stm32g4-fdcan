@@ -139,7 +139,7 @@ class MainWindow(QMainWindow):
     self.log.printLog("BAUD : " + str(baud))
 
     self.cmd.open(port, baud)
-
+    time.sleep(0.1)
     if self.is_fdcan[index] == True:
       err_code, resp = self.cmd_boot.readVersion()
       if err_code == OK:
