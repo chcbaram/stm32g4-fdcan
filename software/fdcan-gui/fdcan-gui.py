@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
     index = self.ui.combo_device.currentIndex() 
     port = self.ui.combo_device.currentText()
     if self.is_fdcan[index] == True:
-      baud = 19200
+      baud = 19210
     else:
       baud = 115200
 
