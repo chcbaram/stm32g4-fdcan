@@ -64,7 +64,7 @@
 
 #define USBD_VID                  0x483
 #define USBD_LANGID_STRING        1033
-#define USBD_MANUFACTURER_STRING  "STMicroelectronics"
+#define USBD_MANUFACTURER_STRING  "BARAM"
 #define USBD_PID                  0x5740
 #define USBD_PRODUCT_STRING       "STM32G4-FDCAN"
 #define USBD_CONFIGURATION_STRING "CDC Config"
@@ -350,6 +350,15 @@ static void Get_SerialNum(void)
   {
     IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
     IntToUnicode(deviceserial1, &USBD_StringSerial[18], 4);
+
+    const char prefix[] = "FDCAN1_";
+    uint32_t prefix_len = 7;
+
+    for (int i=0; i<prefix_len; i++)
+    {
+      USBD_StringSerial[2 + 2*i + 0] = prefix[i];
+      USBD_StringSerial[2 + 2*i + 1] = 0;
+    }
   }
 }
 
