@@ -230,11 +230,12 @@ class MainWindow(QMainWindow):
     self.ui.btn_down_stop.setEnabled(True)
 
   def onFinishDown(self, err_code):
-    self.log.printLog("Down Finish.." + str(err_code))
+    self.log.printLog("Down Finish.." + str(err_code))    
     self.ui.btn_down.setEnabled(True)
     self.ui.btn_down_stop.setEnabled(False)
-    self.btnConnect()
-    self.updateBtn()
+    if err_code == 0:
+      self.btnConnect()
+      self.updateBtn()
 
   def onUpdateDown(self, update_value):
     self.ui.prog_bar_down.setValue(update_value)

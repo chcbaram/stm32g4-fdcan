@@ -85,7 +85,7 @@ class DownFirm(QThread):
         self.log_sig.emit('firm not match')
         self.log_sig.emit('     STM32G4-FDCAN-FW')
         self.log_sig.emit('     %s' % firm_ver[2].decode("utf-8"))
-        raise DownError("Err - firm name\ndd")
+        raise DownError("Err - firm name\n")
 
       self.log_sig.emit('firm ver    : %s' % firm_ver[1].decode("utf-8"))
       self.log_sig.emit('firm name   : %s' % firm_ver[2].decode("utf-8"))
