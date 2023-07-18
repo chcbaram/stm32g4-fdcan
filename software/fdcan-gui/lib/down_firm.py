@@ -2,7 +2,6 @@ import sys
 import time
 import os
 import socket
-import scipy.io as sio
 import wave
 import struct
 
