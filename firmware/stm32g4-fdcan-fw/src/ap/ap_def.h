@@ -4,5 +4,6 @@
 
 #include "hw.h"
 
+#include "thread.h"
 
 #endif

@@ -4,10 +4,13 @@
 
 #include "ap_def.h"
 
-#include "process/cmd_boot.h"
+
+typedef struct
+{
+  thread_t *p_thread;
+} cmd_thread_t;
 
 
-bool cmdThreadInit(void);
-bool cmdThreadUpdate(void);
+cmd_thread_t *cmdThread(void);
 
 #endif

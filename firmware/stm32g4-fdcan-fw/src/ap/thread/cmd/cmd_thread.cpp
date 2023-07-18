@@ -44,7 +44,22 @@ bool cmdThreadUpdate(void)
     }
   }
 
-  
-
   return true;
+}
+
+cmd_thread_t *cmdThread(void)
+{
+  static thread_t thread_obj = 
+  {
+    .p_thread = &thread_obj,
+    .init = cmdThreadInit,
+    .update = cmdThreadUpdate
+  };
+
+  static cmd_thread_t cmd_thread = 
+  {
+    .p_thread = &thread_obj
+  };
+
+  return &cmd_thread;
 }
