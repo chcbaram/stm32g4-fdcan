@@ -5,22 +5,24 @@
 #include "ap_def.h"
 
 
+
+
 typedef enum
 {
   EVENT_MODE_CHANGE,
 } EventCode_t;
 
-typedef struct Event_t_
+
+typedef struct 
 {
   EventCode_t code;
   uint32_t    data;
-} Event_t;
+} event_t;
 
 
 bool eventInit(void);
-bool eventAvailble(void);
-bool eventPut(Event_t *p_event);
-bool eventGet(Event_t *p_event);
-
+bool eventNodeAdd(bool (*func)(event_t *p_event));
+bool eventPut(event_t *p_event);
+bool eventUpdate(void);
 
 #endif

@@ -9,28 +9,41 @@ typedef struct
 {
   int32_t count;
 
-  thread_t *p_thread[THREAD_MAX];
+  thread_t *p_thread;
   bool is_begin;
 
 } thread_info_t;
 
 
+static bool threadBegin(void);
+
+
 static thread_info_t info;
+extern uint32_t _sthread;
+extern uint32_t _ethread;
+
 
 
 
 
 bool threadInit(void)
 {
-  info.count = 0;
   info.is_begin = false;
 
-  for (int i=0; i<THREAD_MAX; i++)
+  info.count = ((int)&_ethread - (int)&_sthread)/sizeof(thread_t);
+  info.p_thread = (thread_t *)&_sthread;
+
+  logPrintf("[ ] threadInit()\n");
+  logPrintf("    count : %d\n", info.count);
+  
+  for (int i=0; i<info.count; i++)
   {
-    info.p_thread[i] = NULL;
+    logPrintf("    %d %s\n", i, info.p_thread[i].name);
   }
 
   eventInit();
+  threadBegin();
+
   return true;
 }
 
@@ -40,28 +53,12 @@ bool threadBegin(void)
 
   for (int i=0; i<info.count; i++)
   {
-    ret &= info.p_thread[i]->init();
+    if (info.p_thread[i].is_enable)
+      ret &= info.p_thread[i].init();
   }
-  info.is_begin = true;
+  info.is_begin = ret;
 
-  return ret;
-}
-
-bool threadCreate(void *p_thread)
-{
-  bool ret;
-
-  if (info.count < THREAD_MAX)
-  {
-    info.p_thread[info.count] = ((thread_t *)p_thread)->p_thread;
-    info.count++;
-    ret = true;
-  }
-  else
-  {
-    ret = false;
-  }
-
+  logPrintf("[%s] threadBegin()\n", ret ? "OK":"NG");
   return ret;
 }
 
@@ -72,26 +69,12 @@ bool threadUpdate(void)
   if (info.is_begin != true)
     return false;
 
-
-  while(eventAvailble())
-  {
-    Event_t evt;
-
-    if (eventGet(&evt) == true)
-    {
-      for (int i=0; i<info.count; i++)
-      {
-        if (info.p_thread[i]->event != NULL)
-        {
-          info.p_thread[i]->event(&evt);
-        }
-      }
-    }
-  }
+  eventUpdate();
 
   for (int i=0; i<info.count; i++)
   {
-    ret &= info.p_thread[i]->update();
+    if (info.p_thread[i].is_enable)
+      ret &= info.p_thread[i].update();
   }
   return ret;
 }

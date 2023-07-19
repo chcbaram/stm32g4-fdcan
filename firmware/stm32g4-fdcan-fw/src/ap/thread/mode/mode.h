@@ -13,14 +13,4 @@ typedef enum
 } ModeUsb_t;
 
 
-typedef struct
-{
-  thread_t *p_thread;
-} mode_thread_t;
-
-
-mode_thread_t *modeThread(void);
-
-
-
 #endif

@@ -1,8 +1,13 @@
-#include "mode_thread.h"
+#include "mode.h"
+
+#include "thread.h"
+#include "common/event.h"
 
 
 
+static bool modeThreadInit(void);
 static void modeThreadISR(void *arg);
+static bool modeThreadUpdate(void);
 
 
 static button_event_t btn_evt;
@@ -15,6 +20,14 @@ static const char *mode_str[] =
     "MODE_USB_TO_CLI"
   };
 
+__attribute__((section(".thread"))) 
+static volatile thread_t thread_obj = 
+  {
+    .name = "mode",
+    .is_enable = true,
+    .init = modeThreadInit,
+    .update = modeThreadUpdate
+  };
 
 
 
@@ -23,6 +36,7 @@ bool modeThreadInit(void)
 {
   uint8_t ee_data = 0;
 
+  (void)thread_obj;
   eepromReadByte(HW_EEPROM_MODE, &ee_data);
   mode = (ModeUsb_t)constrain(ee_data, MODE_USB_TO_CAN, MODE_USB_TO_CLI);
 
@@ -42,7 +56,7 @@ bool modeThreadInit(void)
     logPrintf("[NG] modeThreadInit()\n     swtimerGetHandle()\n");
   }  
 
-  Event_t evt;
+  event_t evt;
   evt.code = EVENT_MODE_CHANGE;
   evt.data = (uint32_t)mode;
   eventPut(&evt);  
@@ -63,7 +77,7 @@ bool modeThreadUpdate(void)
 
     eepromWriteByte(HW_EEPROM_MODE, (uint8_t)mode);
 
-    Event_t evt;
+    event_t evt;
 
     evt.code = EVENT_MODE_CHANGE;
     evt.data = (uint32_t)mode;
@@ -92,21 +106,4 @@ void modeThreadISR(void *arg)
       ledOff(HW_LED_CH_RS485);
       break;
   }
-}
-
-mode_thread_t *modeThread(void)
-{
-  static thread_t thread_obj = 
-  {
-    .p_thread = &thread_obj,
-    .init = modeThreadInit,
-    .update = modeThreadUpdate
-  };
-
-  static mode_thread_t mode_thread = 
-  {
-    .p_thread = &thread_obj
-  };
-
-  return &mode_thread;
 }

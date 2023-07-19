@@ -116,6 +116,12 @@ SECTIONS
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+
+    _sthread = .;
+    KEEP (*(.thread))
+    KEEP (*(.thread*))
+    _ethread = .;
+        
     . = ALIGN(4);
   } >FLASH
 
@@ -157,7 +163,7 @@ SECTIONS
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
-
+    
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH

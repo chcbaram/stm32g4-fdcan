@@ -5,12 +5,5 @@
 #include "ap_def.h"
 
 
-typedef struct
-{
-  thread_t *p_thread;
-} cmd_thread_t;
-
-
-cmd_thread_t *cmdThread(void);
 
 #endif
