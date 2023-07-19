@@ -4,10 +4,6 @@
 
 #include "ap_def.h"
 
-#include "process/cmd_boot.h"
 
-
-bool cmdThreadInit(void);
-bool cmdThreadUpdate(void);
 
 #endif

@@ -116,6 +116,12 @@ SECTIONS
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+
+    _sthread = .;
+    KEEP (*(.thread))
+    KEEP (*(.thread*))
+    _ethread = .;
+        
     . = ALIGN(4);
   } >FLASH
 

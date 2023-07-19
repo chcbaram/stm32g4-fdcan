@@ -69,6 +69,7 @@
 
 #define _USE_HW_EEPROM
 #define      HW_EEPROM_MAX_PAGES    4
+#define      HW_EEPROM_MODE         0
 
 #define _USE_HW_RESET
 #define      HW_RESET_BOOT          1

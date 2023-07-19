@@ -1,4 +1,6 @@
 #include "cmd_thread.h"
+
+#include "thread.h"
 #include "driver/cmd_uart.h"
 #include "process/cmd_boot.h"
 
@@ -8,14 +10,29 @@
 #define CMD_DRIVER_MAX_CH     1
 
 
+static bool cmdThreadInit(void);
+static bool cmdThreadUpdate(void);
+
 static cmd_t        cmd[CMD_DRIVER_MAX_CH];
 static cmd_driver_t cmd_drvier[CMD_DRIVER_MAX_CH];
+
+
+__attribute__((section(".thread"))) 
+static volatile thread_t thread_obj = 
+  {
+    .name = "cmd",
+    .is_enable = true,
+    .init = cmdThreadInit,
+    .update = cmdThreadUpdate
+  };
 
 
 
 
 bool cmdThreadInit(void)
 {
+  (void)thread_obj;
+
   cmdUartInitDriver(&cmd_drvier[0], HW_UART_CH_USB, 1000000);  
   cmdInit(&cmd[0], &cmd_drvier[0]);
   cmdOpen(&cmd[0]);
@@ -44,7 +61,6 @@ bool cmdThreadUpdate(void)
     }
   }
 
-  
-
   return true;
 }
+
