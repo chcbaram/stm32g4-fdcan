@@ -109,7 +109,11 @@ class Ui_MainWindow(object):
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_2)
+#ifndef Q_OS_MAC
+        self.verticalLayout_4.setSpacing(-1)
+#endif
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(-1, 12, -1, -1)
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.combo_file = QComboBox(self.frame_2)
@@ -133,7 +137,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setContentsMargins(0, -1, -1, -1)
+        self.horizontalLayout_4.setContentsMargins(0, 0, -1, -1)
         self.btn_down = QPushButton(self.frame_2)
         self.btn_down.setObjectName(u"btn_down")
         sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -182,11 +186,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.frame_2)
 
         self.tabWidget.addTab(self.tab_update, "")
-        self.tab_info = QWidget()
-        self.tab_info.setObjectName(u"tab_info")
-        self.verticalLayout = QVBoxLayout(self.tab_info)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.tabWidget.addTab(self.tab_info, "")
 
         self.horizontalLayout.addWidget(self.tabWidget)
 
@@ -229,7 +228,6 @@ class Ui_MainWindow(object):
         self.btn_down_stop.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
         self.btn_log_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_update), QCoreApplication.translate("MainWindow", u"UPDATE", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_info), QCoreApplication.translate("MainWindow", u"CAN", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuLog.setTitle(QCoreApplication.translate("MainWindow", u"Log", None))
     # retranslateUi

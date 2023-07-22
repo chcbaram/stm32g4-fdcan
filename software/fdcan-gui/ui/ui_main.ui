@@ -133,6 +133,12 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>-1</number>
+           </property>
+           <property name="topMargin">
+            <number>12</number>
+           </property>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -162,6 +168,9 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
               <number>0</number>
              </property>
              <item>
@@ -232,12 +241,6 @@
          </widget>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="tab_info">
-       <attribute name="title">
-        <string>CAN</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
       </widget>
      </widget>
     </item>

@@ -11,11 +11,17 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6.QtCore import QFile
 from PySide6.QtGui import *
 from ui.ui_main import *
+from ui.ui_rs485 import *
+from ui.ui_can import *
+
 from lib.err_code import *
 from lib.log import LogWidget
 from lib.cmd import *
 from lib.cmd_boot import *
 from lib.down_firm import *
+from tab.tab_can import *
+from tab.tab_rs485 import *
+
 
 
 
@@ -30,6 +36,7 @@ class MainWindow(QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
+    
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
     self.log.printLog('FDCAN-GUI 23-07-16\n')
@@ -40,6 +47,11 @@ class MainWindow(QMainWindow):
     self.device_info = []
     self.is_fdcan = []
     self.down_thread = None
+
+    self.tab_can = TabCAN(self.ui)
+    self.ui.tabWidget.addTab(self.tab_can, "CAN")
+    self.tab_rs485 = TabRS485(self.ui)
+    self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
 
     self.setClickedEvent(self.ui.btn_scan, self.btnScan)  
     self.setClickedEvent(self.ui.btn_open, self.btnOpen)  
