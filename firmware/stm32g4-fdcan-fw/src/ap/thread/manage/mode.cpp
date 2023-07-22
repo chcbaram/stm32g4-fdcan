@@ -136,6 +136,7 @@ bool modeThreadUpdate(void)
         usb_type = TYPE_USB_PACKET;
       else
         usb_type = TYPE_USB_UART;
+      break;
 
     case MODE_USB_TO_CLI:
       if (usbIsOpen() == true)
@@ -150,7 +151,6 @@ bool modeThreadUpdate(void)
         usb_type = TYPE_USB_PACKET;
       }
       break;
-
   }
 
 

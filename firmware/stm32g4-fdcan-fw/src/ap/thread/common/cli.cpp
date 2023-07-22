@@ -65,6 +65,14 @@ bool cliThreadUpdate(void)
         }
         cliMain();
       }
+      else
+      {
+        if (cliGetPort() != HW_UART_CH_DEBUG)
+        {
+          cliOpen(HW_UART_CH_DEBUG, 0);
+        }
+        cliMain();        
+      }
       break;
     
     case MODE_USB_TO_RS485:

@@ -66,6 +66,12 @@ bool rs485Threadupdate(void)
     uint32_t length;
     uint8_t buf[256];
 
+    if (uartGetBaud(HW_UART_CH_USB) != uartGetBaud(HW_UART_CH_RS485))
+    {
+      uartOpen(HW_UART_CH_RS485, uartGetBaud(HW_UART_CH_USB));
+      logPrintf("[  ] rs485 baud %d\n", uartGetBaud(HW_UART_CH_RS485));
+    }
+
     // USB -> RS485
     //
     length = cmin(uartAvailable(HW_UART_CH_USB), 256);
@@ -84,6 +90,7 @@ bool rs485Threadupdate(void)
     length = cmin(uartAvailable(HW_UART_CH_RS485), 256);
     if (length > 0)
     {
+      is_rx_update = true;
       for (uint32_t i=0; i<length; i++)
       {
         buf[i] = uartRead(HW_UART_CH_RS485);
@@ -143,6 +150,33 @@ void rs485ThreadISR(void *arg)
       {
         state_tx = LED_IDLE;
         pre_time_tx = millis();
+      }
+      break;
+  }
+  switch(state_rx)
+  {
+    case LED_IDLE:
+      if (is_enable && is_rx_update)
+      {
+        is_rx_update = false;
+        state_rx = LED_ON;
+        ledOn(HW_LED_CH_RX);
+        pre_time_rx = millis();
+      }
+      break;
+    case LED_ON:
+      if (millis()-pre_time_rx >= 50)
+      {
+        state_rx = LED_OFF;
+        ledOff(HW_LED_CH_RX);
+        pre_time_rx = millis();
+      }
+      break;
+    case LED_OFF:
+      if (millis()-pre_time_rx >= 50)
+      {
+        state_rx = LED_IDLE;
+        pre_time_rx = millis();
       }
       break;
   }
