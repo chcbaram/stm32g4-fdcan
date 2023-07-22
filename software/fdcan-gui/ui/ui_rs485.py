@@ -80,6 +80,8 @@ class Ui_RS485(object):
         self.horizontalLayout_3.addWidget(self.label_2)
 
         self.comboBox_3 = QComboBox(RS485)
+        self.comboBox_3.addItem("")
+        self.comboBox_3.addItem("")
         self.comboBox_3.setObjectName(u"comboBox_3")
 
         self.horizontalLayout_3.addWidget(self.comboBox_3)
@@ -133,6 +135,9 @@ class Ui_RS485(object):
         self.label.setText(QCoreApplication.translate("RS485", u"BAUD", None))
         self.btn_open.setText(QCoreApplication.translate("RS485", u"Open", None))
         self.label_2.setText(QCoreApplication.translate("RS485", u"FORMAT", None))
+        self.comboBox_3.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
+        self.comboBox_3.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
+
         self.comboBox_2.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
         self.comboBox_2.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
 
