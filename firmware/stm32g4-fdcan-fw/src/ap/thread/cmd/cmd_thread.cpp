@@ -1,6 +1,7 @@
 #include "cmd_thread.h"
 
 #include "thread.h"
+#include "manage/mode.h"
 #include "driver/cmd_uart.h"
 #include "process/cmd_boot.h"
 
@@ -43,6 +44,12 @@ bool cmdThreadInit(void)
 
 bool cmdThreadUpdate(void)
 {
+
+  if (modeObj()->getType() != TYPE_USB_PACKET)
+  {
+    return false;
+  }
+
   for (int i=0; i<CMD_DRIVER_MAX_CH; i++)
   {
     if (cmd[i].is_init == true)

@@ -6,7 +6,7 @@
 #include "bsp.h"
 
 
-#define _DEF_FIRMWATRE_VERSION    "V230702R1"
+#define _DEF_FIRMWATRE_VERSION    "V230722R1"
 #define _DEF_BOARD_NAME           "STM32G4-FDCAN-FW"
 
 

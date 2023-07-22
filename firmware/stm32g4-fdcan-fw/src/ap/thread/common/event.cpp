@@ -16,6 +16,11 @@ typedef struct
 static bool eventGet(event_t *p_event);
 static bool eventAvailble(void);
 
+const char *event_str[] = 
+  {
+    "EVENT_MODE_CHANGE",
+    "EVENT_USB_OPEN",
+  };
 
 static bool is_init = false;
 static bool is_log = true;
@@ -106,7 +111,7 @@ bool eventUpdate(void)
     {
       if (is_log == true)
       {
-        logPrintf("Event %X:%d\n", evt.code, evt.data);
+        logPrintf("[  ] Event %s:%d\n", event_str[evt.code], evt.data);
       }
 
       for (int i=0; i<event_node.count; i++)

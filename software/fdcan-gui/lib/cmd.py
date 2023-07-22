@@ -75,6 +75,10 @@ class CmdThread(QThread):
     self.is_rxd_packet = False
     return self.rxd_packet
 
+  def clearBuffer(self):
+    if self.resp_q.qsize() > 0:
+      self.resp_q.get()
+
   def parsingPacket(self, rx_bytes):
     CMD_STATE_WAIT_STX0      = 0
     CMD_STATE_WAIT_STX1      = 1
@@ -200,6 +204,10 @@ class Cmd:
       self.uart_port.port = port
       self.uart_port.baudrate = baud
       self.uart_port.open()
+      time.sleep(0.1)
+      self.uart_port.flush()
+      self.uart_port.flushInput()
+      self.uart_port.flushOutput()
       self.is_open = True
       # self.uart_port.timeout = 0.1
       print('Uart::open() OK')

@@ -180,6 +180,25 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   return ret;
 }
 
+bool uartIsOpen(uint8_t ch)
+{
+  bool ret = false;
+
+  switch(ch)
+  {
+    case _DEF_UART1:
+    case _DEF_UART2:
+    case _DEF_UART3:
+      ret = uart_tbl[ch].is_open = true;
+      break;   
+
+    case _DEF_UART4:
+      ret = cdcIsConnect();
+      break;   
+  }
+  return ret;
+}
+
 bool uartClose(uint8_t ch)
 {
   if (ch >= UART_MAX_CH) return false;
