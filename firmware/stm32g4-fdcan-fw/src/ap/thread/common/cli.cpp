@@ -2,16 +2,13 @@
 
 #include "thread.h"
 #include "common/event.h"
-#include "mode/mode.h"
+#include "manage/mode.h"
 
 
 static bool cliThreadInit(void);
 static bool cliThreadUpdate(void);
 static bool cliThreadEvent(event_t *p_event);
 
-
-static bool is_mode_update = false;
-static ModeUsb_t mode = MODE_USB_TO_CAN;
 
 __attribute__((section(".thread"))) 
 static volatile thread_t thread_obj = 
@@ -39,11 +36,6 @@ bool cliThreadInit(void)
 
 bool cliThreadEvent(event_t *p_event)
 {
-  if (p_event->code == EVENT_MODE_CHANGE)
-  {
-    is_mode_update = true;
-    mode = (ModeUsb_t)p_event->data;
-  }
   return true;
 }
 
@@ -53,22 +45,26 @@ bool cliThreadUpdate(void)
   uint8_t cli_ch;
 
 
-  switch(mode)
+  
+  switch(modeObj()->getMode())
   {
     case MODE_USB_TO_CLI:
-      if (usbIsOpen() && usbGetType() == USB_CON_CLI)
+      if (modeObj()->getType() == TYPE_USB_UART)
       {
-        cli_ch = HW_UART_CH_USB;
+        if (usbIsOpen() && usbGetType() == USB_CON_CLI)
+        {
+          cli_ch = HW_UART_CH_USB;
+        }
+        else
+        {
+          cli_ch = HW_UART_CH_DEBUG;
+        }
+        if (cli_ch != cliGetPort())
+        {
+          cliOpen(cli_ch, 0);
+        }
+        cliMain();
       }
-      else
-      {
-        cli_ch = HW_UART_CH_DEBUG;
-      }
-      if (cli_ch != cliGetPort())
-      {
-        cliOpen(cli_ch, 0);
-      }
-      cliMain();
       break;
     
     case MODE_USB_TO_RS485:

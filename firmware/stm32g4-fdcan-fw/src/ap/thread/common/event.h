@@ -6,13 +6,6 @@
 
 
 
-
-typedef enum
-{
-  EVENT_MODE_CHANGE,
-} EventCode_t;
-
-
 typedef struct 
 {
   EventCode_t code;

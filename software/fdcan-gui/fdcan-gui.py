@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
     index = self.ui.combo_device.currentIndex() 
     port = self.ui.combo_device.currentText()
     if self.is_fdcan[index] == True:
-      baud = 19210
+      baud = 600
     else:
       baud = 115200
 
@@ -141,18 +141,27 @@ class MainWindow(QMainWindow):
     self.cmd.open(port, baud)
     time.sleep(0.1)
     if self.is_fdcan[index] == True:
-      err_code, resp = self.cmd_boot.readVersion()
-      if err_code == OK:
-        self.ui.text_device_info.clear()
-        self.ui.text_device_info.appendPlainText(self.device_info[index])    
-        self.ui.text_device_info.appendPlainText("    ")
+      is_connected = False
 
-        self.ui.text_device_info.appendPlainText(resp.boot.name_str)
-        self.ui.text_device_info.appendPlainText("    " + resp.boot.version_str)
+      for i in range(3):
+        err_code, resp = self.cmd_boot.readVersion(100)
+        if err_code == OK:
+          self.ui.text_device_info.clear()
+          self.ui.text_device_info.appendPlainText(self.device_info[index])    
+          self.ui.text_device_info.appendPlainText("    ")
 
-        self.ui.text_device_info.appendPlainText(resp.firm.name_str)
-        self.ui.text_device_info.appendPlainText("    " + resp.firm.version_str)     
+          self.ui.text_device_info.appendPlainText(resp.boot.name_str)
+          self.ui.text_device_info.appendPlainText("    " + resp.boot.version_str)
 
+          self.ui.text_device_info.appendPlainText(resp.firm.name_str)
+          self.ui.text_device_info.appendPlainText("    " + resp.firm.version_str)     
+          is_connected = True
+          break
+        time.sleep(0.1)
+
+      if is_connected != True:
+        self.cmd.close()
+      
   def isCanDown(self):
     if self.ui.btn_down.isEnabled() == False:
       return False    
