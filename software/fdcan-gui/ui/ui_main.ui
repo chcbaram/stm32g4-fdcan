@@ -133,6 +133,12 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>-1</number>
+           </property>
+           <property name="topMargin">
+            <number>12</number>
+           </property>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -162,6 +168,9 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
               <number>0</number>
              </property>
              <item>
@@ -233,12 +242,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_info">
-       <attribute name="title">
-        <string>CAN</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -260,9 +263,13 @@
    </widget>
    <widget class="QMenu" name="menuLog">
     <property name="title">
-     <string>Log</string>
+     <string>Font</string>
     </property>
-    <addaction name="actionClear"/>
+    <addaction name="action10"/>
+    <addaction name="action11"/>
+    <addaction name="action12"/>
+    <addaction name="action13"/>
+    <addaction name="action14"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuLog"/>
@@ -273,9 +280,44 @@
     <string>Force Exit</string>
    </property>
   </action>
-  <action name="actionClear">
+  <action name="action10">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Clear</string>
+    <string>10</string>
+   </property>
+  </action>
+  <action name="action11">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>11</string>
+   </property>
+  </action>
+  <action name="action12">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>12</string>
+   </property>
+  </action>
+  <action name="action13">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>13</string>
+   </property>
+  </action>
+  <action name="action14">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>14</string>
    </property>
   </action>
  </widget>

@@ -11,11 +11,17 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6.QtCore import QFile
 from PySide6.QtGui import *
 from ui.ui_main import *
+from ui.ui_rs485 import *
+from ui.ui_can import *
+
 from lib.err_code import *
 from lib.log import LogWidget
 from lib.cmd import *
 from lib.cmd_boot import *
 from lib.down_firm import *
+from tab.tab_can import *
+from tab.tab_rs485 import *
+from configparser import ConfigParser
 
 
 
@@ -30,16 +36,35 @@ class MainWindow(QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
+    self.font_size = 14
+    self.update_file = ""
+    self.loadConfig()
+
+    self.updateFontSize(self.font_size)
+
+    gui_ver = 'FDCAN-GUI 23-07-23'
+    
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
-    self.log.printLog('FDCAN-GUI 23-07-16\n')
-
+    self.log.printLog(gui_ver + '\n')
+    self.setWindowTitle(gui_ver)
     self.file_list = []
     self.cmd = Cmd()
     self.cmd_boot = CmdBoot(self.cmd)
     self.device_info = []
     self.is_fdcan = []
     self.down_thread = None
+
+    self.tab_can = TabCAN(self.ui)
+    self.ui.tabWidget.addTab(self.tab_can, "CAN")
+    self.tab_rs485 = TabRS485(self.ui)
+    self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
+
+    self.ui.action10.triggered.connect(lambda: self.updateFontSize(10))
+    self.ui.action11.triggered.connect(lambda: self.updateFontSize(11))
+    self.ui.action12.triggered.connect(lambda: self.updateFontSize(12))
+    self.ui.action13.triggered.connect(lambda: self.updateFontSize(13))
+    self.ui.action14.triggered.connect(lambda: self.updateFontSize(14))
 
     self.setClickedEvent(self.ui.btn_scan, self.btnScan)  
     self.setClickedEvent(self.ui.btn_open, self.btnOpen)  
@@ -55,7 +80,55 @@ class MainWindow(QMainWindow):
     self.ui.btn_down_stop.setEnabled(False)
     self.btnScan()
     self.updateBtn()
-  
+
+    if len(self.update_file) > 0:
+      self.file_list.append(self.update_file)
+      self.ui.combo_file.addItem(os.path.basename(self.update_file))
+      self.log.printLog(os.path.dirname(self.update_file))
+
+
+  def loadConfig(self):        
+    self.config = ConfigParser() 
+    self.config.optionxform = lambda optionstr: optionstr
+
+    self.config['config'] = {}
+    self.config_item = self.config['config']
+
+    if os.path.exists("config.ini"):
+      self.config.read('config.ini')  
+      try:
+        self.font_size = int(self.config_item['font_size'])
+        self.update_file = self.config_item['update_file']
+      except Exception as e:
+        print(e)
+    else:
+      self.config_item['font_size'] = str(self.font_size)
+      self.saveConfig()
+
+
+  def saveConfig(self):  
+    self.config_item['font_size'] = str(self.font_size)
+    self.config_item['update_file'] = self.update_file
+    with open('config.ini', 'w') as configfile:
+      self.config.write(configfile)
+
+  def updateFontSize(self, font_size):
+    self.font_size = font_size
+    self.setFont(QFont("D2Coding", font_size))
+    self.ui.log_text.setFont(QFont("D2Coding", font_size))
+    font_check = [[10,self.ui.action10],
+                  [11,self.ui.action11], 
+                  [12,self.ui.action12], 
+                  [13,self.ui.action13], 
+                  [14,self.ui.action14],]
+
+    for i in font_check:
+      if i[0] == font_size:
+        i[1].setChecked(True)
+      else:
+        i[1].setChecked(False)  
+    self.saveConfig()      
+
   def __del__(self):
     self.cmd.stop()
     print("del()")
@@ -113,8 +186,12 @@ class MainWindow(QMainWindow):
     pass
       
   def btnOpen(self):
-    fname = QFileDialog.getOpenFileNames(self, "Open File", "", "Bin File(*.bin)")
+    file_path = os.path.dirname(self.update_file)
+    fname = QFileDialog.getOpenFileNames(self, "Open File", file_path, "Bin File(*.bin)")
+
     if len(fname[0]) > 0:
+      self.update_file = fname[0][0]
+      self.saveConfig()
       self.updateFileList(fname)
       self.showFileInfo()
 
@@ -225,8 +302,10 @@ class MainWindow(QMainWindow):
 
     if self.cmd.is_open:
       self.ui.btn_scan.setEnabled(False)
+      self.ui.combo_device.setEnabled(False)
     else:
       self.ui.btn_scan.setEnabled(True)   
+      self.ui.combo_device.setEnabled(True)
 
     if self.cmd.is_open and self.ui.combo_file.count() > 0:
       self.ui.btn_down.setEnabled(True)
@@ -267,8 +346,7 @@ def main():
   fontpath = os.path.abspath("data/font/D2Coding.ttf")
   QFontDatabase.addApplicationFont(fontpath)
   app.setFont(QFont("D2Coding", 14))
-
-
+  
   window = MainWindow()
   center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
   geo = window.frameGeometry()

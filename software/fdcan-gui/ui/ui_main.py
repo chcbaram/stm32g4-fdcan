@@ -32,8 +32,21 @@ class Ui_MainWindow(object):
         MainWindow.setFont(font)
         self.actionForce_Exit = QAction(MainWindow)
         self.actionForce_Exit.setObjectName(u"actionForce_Exit")
-        self.actionClear = QAction(MainWindow)
-        self.actionClear.setObjectName(u"actionClear")
+        self.action10 = QAction(MainWindow)
+        self.action10.setObjectName(u"action10")
+        self.action10.setCheckable(True)
+        self.action11 = QAction(MainWindow)
+        self.action11.setObjectName(u"action11")
+        self.action11.setCheckable(True)
+        self.action12 = QAction(MainWindow)
+        self.action12.setObjectName(u"action12")
+        self.action12.setCheckable(True)
+        self.action13 = QAction(MainWindow)
+        self.action13.setObjectName(u"action13")
+        self.action13.setCheckable(True)
+        self.action14 = QAction(MainWindow)
+        self.action14.setObjectName(u"action14")
+        self.action14.setCheckable(True)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
@@ -109,7 +122,11 @@ class Ui_MainWindow(object):
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_2)
+#ifndef Q_OS_MAC
+        self.verticalLayout_4.setSpacing(-1)
+#endif
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(-1, 12, -1, -1)
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.combo_file = QComboBox(self.frame_2)
@@ -133,7 +150,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setContentsMargins(0, -1, -1, -1)
+        self.horizontalLayout_4.setContentsMargins(0, 0, -1, -1)
         self.btn_down = QPushButton(self.frame_2)
         self.btn_down.setObjectName(u"btn_down")
         sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -182,11 +199,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.frame_2)
 
         self.tabWidget.addTab(self.tab_update, "")
-        self.tab_info = QWidget()
-        self.tab_info.setObjectName(u"tab_info")
-        self.verticalLayout = QVBoxLayout(self.tab_info)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.tabWidget.addTab(self.tab_info, "")
 
         self.horizontalLayout.addWidget(self.tabWidget)
 
@@ -206,7 +218,11 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuLog.menuAction())
         self.menuFile.addAction(self.actionForce_Exit)
-        self.menuLog.addAction(self.actionClear)
+        self.menuLog.addAction(self.action10)
+        self.menuLog.addAction(self.action11)
+        self.menuLog.addAction(self.action12)
+        self.menuLog.addAction(self.action13)
+        self.menuLog.addAction(self.action14)
 
         self.retranslateUi(MainWindow)
 
@@ -219,7 +235,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"FDCAN-GUI", None))
         self.actionForce_Exit.setText(QCoreApplication.translate("MainWindow", u"Force Exit", None))
-        self.actionClear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
+        self.action10.setText(QCoreApplication.translate("MainWindow", u"10", None))
+        self.action11.setText(QCoreApplication.translate("MainWindow", u"11", None))
+        self.action12.setText(QCoreApplication.translate("MainWindow", u"12", None))
+        self.action13.setText(QCoreApplication.translate("MainWindow", u"13", None))
+        self.action14.setText(QCoreApplication.translate("MainWindow", u"14", None))
         self.btn_scan.setText(QCoreApplication.translate("MainWindow", u"Scan", None))
         self.radio_scan_fdcan.setText(QCoreApplication.translate("MainWindow", u"FDCAN", None))
         self.radio_scan_uart.setText(QCoreApplication.translate("MainWindow", u"UART", None))
@@ -229,8 +249,7 @@ class Ui_MainWindow(object):
         self.btn_down_stop.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
         self.btn_log_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_update), QCoreApplication.translate("MainWindow", u"UPDATE", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_info), QCoreApplication.translate("MainWindow", u"CAN", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuLog.setTitle(QCoreApplication.translate("MainWindow", u"Log", None))
+        self.menuLog.setTitle(QCoreApplication.translate("MainWindow", u"Font", None))
     # retranslateUi
 
