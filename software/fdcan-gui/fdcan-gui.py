@@ -36,6 +36,10 @@ class MainWindow(QMainWindow):
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
 
+    self.font_size = 14
+    self.updateFontSize(self.font_size)
+
+
     
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
@@ -53,6 +57,12 @@ class MainWindow(QMainWindow):
     self.tab_rs485 = TabRS485(self.ui)
     self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
 
+    self.ui.action10.triggered.connect(lambda: self.updateFontSize(10))
+    self.ui.action11.triggered.connect(lambda: self.updateFontSize(11))
+    self.ui.action12.triggered.connect(lambda: self.updateFontSize(12))
+    self.ui.action13.triggered.connect(lambda: self.updateFontSize(13))
+    self.ui.action14.triggered.connect(lambda: self.updateFontSize(14))
+
     self.setClickedEvent(self.ui.btn_scan, self.btnScan)  
     self.setClickedEvent(self.ui.btn_open, self.btnOpen)  
     self.setClickedEvent(self.ui.btn_connect, self.btnConnect)  
@@ -67,7 +77,23 @@ class MainWindow(QMainWindow):
     self.ui.btn_down_stop.setEnabled(False)
     self.btnScan()
     self.updateBtn()
-  
+
+  def updateFontSize(self, font_size):
+    self.setFont(QFont("D2Coding", font_size))
+
+    font_check = [[10,self.ui.action10],
+                  [11,self.ui.action11], 
+                  [12,self.ui.action12], 
+                  [13,self.ui.action13], 
+                  [14,self.ui.action14],]
+
+    for i in font_check:
+      if i[0] == font_size:
+        i[1].setChecked(True)
+      else:
+        i[1].setChecked(False)  
+      
+
   def __del__(self):
     self.cmd.stop()
     print("del()")
@@ -279,8 +305,7 @@ def main():
   fontpath = os.path.abspath("data/font/D2Coding.ttf")
   QFontDatabase.addApplicationFont(fontpath)
   app.setFont(QFont("D2Coding", 14))
-
-
+  
   window = MainWindow()
   center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
   geo = window.frameGeometry()
