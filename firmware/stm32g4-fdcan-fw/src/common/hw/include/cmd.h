@@ -25,6 +25,8 @@ typedef enum CmdType
   PKT_TYPE_EVENT      = 0x02,
   PKT_TYPE_LOG        = 0x03,
   PKT_TYPE_PING       = 0x04,
+  PKT_TYPE_CAN        = 0x05,
+  PKT_TYPE_UART       = 0x06,
 } CmdType_t;
 
 

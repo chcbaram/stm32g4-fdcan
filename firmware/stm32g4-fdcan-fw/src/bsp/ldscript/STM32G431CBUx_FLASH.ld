@@ -121,7 +121,12 @@ SECTIONS
     KEEP (*(.thread))
     KEEP (*(.thread*))
     _ethread = .;
-        
+
+    _scmd_process = .;
+    KEEP (*(.cmd_process))
+    KEEP (*(.cmd_process*))
+    _ecmd_process = .;
+
     . = ALIGN(4);
   } >FLASH
 

@@ -3,12 +3,19 @@
 #include "thread.h"
 #include "mode.h"
 #include "common/event.h"
+#include "cmd/cmd_thread.h"
 
 
 static bool rs485Threadinit(void);
 static bool rs485Threadupdate(void);
 static bool rs485ThreadEvent(event_t *p_event);
 static void rs485ThreadISR(void *arg);
+static void rs485ThreadUpdateUart(void);
+static void rs485ThreadUpdatePacket(void);
+static bool rs485CmdOpen(cmd_t *p_cmd);
+static bool rs485CmdClose(cmd_t *p_cmd);
+static bool rs485CmdData(cmd_t *p_cmd);
+
 #ifdef _USE_HW_CLI
 static void cliCmd(cli_args_t *args);
 #endif
@@ -22,9 +29,20 @@ static volatile thread_t thread_obj =
     .update = rs485Threadupdate
   };
 
+__attribute__((section(".cmd_process"))) 
+static volatile cmd_process_t cmd_obj[] = 
+  {
+    {PKT_TYPE_CMD,  "CMD_RS485_OPEN",  CMD_RS485_OPEN,  rs485CmdOpen},
+    {PKT_TYPE_CMD,  "CMD_RS485_CLOSE", CMD_RS485_CLOSE, rs485CmdClose},
+    {PKT_TYPE_UART, "CMD_RS485_DATA",  CMD_RS485_DATA,  rs485CmdData}
+  };
+
+
 static bool is_enable = false;
 static bool is_rx_update = false;
 static bool is_tx_update = false;
+static bool is_packet_open = false;
+static uint32_t packet_baud = 19200;
 
 
 
@@ -52,7 +70,7 @@ bool rs485Threadinit(void)
 
 bool rs485Threadupdate(void)
 {
-  if (modeObj()->getMode() == MODE_USB_TO_RS485 && modeObj()->getType() == TYPE_USB_UART)
+  if (modeObj()->getMode() == MODE_USB_TO_RS485 || modeObj()->getMode() == MODE_USB_TO_CAN)
   {
     is_enable = true;
   }
@@ -63,40 +81,14 @@ bool rs485Threadupdate(void)
 
   if (is_enable == true)
   {
-    uint32_t length;
-    uint8_t buf[256];
-
-    if (uartGetBaud(HW_UART_CH_USB) != uartGetBaud(HW_UART_CH_RS485))
+    if (modeObj()->getType() == TYPE_USB_UART)
     {
-      uartOpen(HW_UART_CH_RS485, uartGetBaud(HW_UART_CH_USB));
-      logPrintf("[  ] rs485 baud %d\n", uartGetBaud(HW_UART_CH_RS485));
+      rs485ThreadUpdateUart();
     }
-
-    // USB -> RS485
-    //
-    length = cmin(uartAvailable(HW_UART_CH_USB), 256);
-    if (length > 0)
+    else
     {
-      is_tx_update = true;
-      for (uint32_t i=0; i<length; i++)
-      {
-        buf[i] = uartRead(HW_UART_CH_USB);
-      }
-      uartWrite(HW_UART_CH_RS485, buf, length);
-    }    
-
-    // RS485 -> USB
-    //
-    length = cmin(uartAvailable(HW_UART_CH_RS485), 256);
-    if (length > 0)
-    {
-      is_rx_update = true;
-      for (uint32_t i=0; i<length; i++)
-      {
-        buf[i] = uartRead(HW_UART_CH_RS485);
-      }
-      uartWrite(HW_UART_CH_USB, buf, length);
-    }      
+      rs485ThreadUpdatePacket();
+    }
   }
   else
   {
@@ -106,6 +98,73 @@ bool rs485Threadupdate(void)
     }
   }
   return true;
+}
+
+void rs485ThreadUpdateUart(void)
+{
+  uint32_t length;
+  uint8_t buf[256];
+
+  if (uartGetBaud(HW_UART_CH_USB) != uartGetBaud(HW_UART_CH_RS485))
+  {
+    uartOpen(HW_UART_CH_RS485, uartGetBaud(HW_UART_CH_USB));
+    logPrintf("[  ] rs485 baud %d\n", uartGetBaud(HW_UART_CH_RS485));
+  }
+
+  // USB -> RS485
+  //
+  length = cmin(uartAvailable(HW_UART_CH_USB), 256);
+  if (length > 0)
+  {
+    is_tx_update = true;
+    for (uint32_t i=0; i<length; i++)
+    {
+      buf[i] = uartRead(HW_UART_CH_USB);
+    }
+    uartWrite(HW_UART_CH_RS485, buf, length);
+  }    
+
+  // RS485 -> USB
+  //
+  length = cmin(uartAvailable(HW_UART_CH_RS485), 256);
+  if (length > 0)
+  {
+    is_rx_update = true;
+    for (uint32_t i=0; i<length; i++)
+    {
+      buf[i] = uartRead(HW_UART_CH_RS485);
+    }
+    uartWrite(HW_UART_CH_USB, buf, length);
+  }      
+}
+
+void rs485ThreadUpdatePacket(void)
+{
+  uint32_t length;
+  uint8_t buf[256];
+
+  if (is_packet_open != true)
+    return;
+
+
+  if (packet_baud != uartGetBaud(HW_UART_CH_RS485))
+  {
+    uartOpen(HW_UART_CH_RS485, packet_baud);
+    logPrintf("[  ] rs485 baud %d\n", uartGetBaud(HW_UART_CH_RS485));
+  }  
+
+  // RS485 -> USB
+  //
+  length = cmin(uartAvailable(HW_UART_CH_RS485), 256);
+  if (length > 0)
+  {
+    is_rx_update = true;
+    for (uint32_t i=0; i<length; i++)
+    {
+      buf[i] = uartRead(HW_UART_CH_RS485);
+    }
+    cmdObj()->sendPacket(PKT_TYPE_UART, CMD_RS485_DATA, OK, buf, length);  
+  }      
 }
 
 bool rs485ThreadEvent(event_t *p_event)
@@ -180,6 +239,39 @@ void rs485ThreadISR(void *arg)
       }
       break;
   }
+}
+
+bool rs485CmdOpen(cmd_t *p_cmd)
+{
+  data_t baud;
+
+  memcpy(baud.u8Data, &p_cmd->packet.data[0], 4);
+
+  logPrintf("[  ] rs485CmdOpen()\n");
+  logPrintf("     %d bps\n", baud.u32D);
+
+  is_packet_open = true;
+  packet_baud = baud.u32D;
+ 
+  cmdObj()->sendResp(p_cmd, OK, NULL, 0);
+  return true;
+}
+
+bool rs485CmdClose(cmd_t *p_cmd)
+{
+  logPrintf("[  ] rs485CmdClose()\n");
+  is_packet_open = false;
+
+  cmdObj()->sendResp(p_cmd, OK, NULL, 0);
+  return true;
+}
+
+bool rs485CmdData(cmd_t *p_cmd)
+{
+  // USB -> RS485
+  //
+  uartWrite(HW_UART_CH_RS485, p_cmd->packet.data, p_cmd->packet.length);
+  return true;
 }
 
 #ifdef _USE_HW_CLI

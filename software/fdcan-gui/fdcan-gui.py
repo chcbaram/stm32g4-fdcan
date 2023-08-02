@@ -18,6 +18,7 @@ from lib.err_code import *
 from lib.log import LogWidget
 from lib.cmd import *
 from lib.cmd_boot import *
+
 from lib.down_firm import *
 from tab.tab_can import *
 from tab.tab_rs485 import *
@@ -42,7 +43,7 @@ class MainWindow(QMainWindow):
 
     self.updateFontSize(self.font_size)
 
-    gui_ver = 'FDCAN-GUI 23-07-23'
+    gui_ver = 'FDCAN-GUI 23-08-03'
     
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
@@ -57,7 +58,7 @@ class MainWindow(QMainWindow):
 
     self.tab_can = TabCAN(self.ui)
     self.ui.tabWidget.addTab(self.tab_can, "CAN")
-    self.tab_rs485 = TabRS485(self.ui)
+    self.tab_rs485 = TabRS485(self.ui, self.cmd)
     self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
 
     self.ui.action10.triggered.connect(lambda: self.updateFontSize(10))
@@ -86,6 +87,12 @@ class MainWindow(QMainWindow):
       self.ui.combo_file.addItem(os.path.basename(self.update_file))
       self.log.printLog(os.path.dirname(self.update_file))
 
+    self.cmd.setRxdEvent(self.rxdEvent)
+
+  def rxdEvent(self, packet: CmdPacket):
+    # packet = self.tab_rs485.event_q.get()
+    if packet.type == PKT_TYPE_UART:
+      self.tab_rs485.rxdEvent(packet)
 
   def loadConfig(self):        
     self.config = ConfigParser() 
@@ -181,10 +188,6 @@ class MainWindow(QMainWindow):
     self.ui.btn_connect.setEnabled(True)        
         
       
-    
-  def rxdSignal(self, packet: CmdPacket):
-    pass
-      
   def btnOpen(self):
     file_path = os.path.dirname(self.update_file)
     fname = QFileDialog.getOpenFileNames(self, "Open File", file_path, "Bin File(*.bin)")
@@ -237,6 +240,7 @@ class MainWindow(QMainWindow):
         time.sleep(0.1)
 
       if is_connected != True:
+        self.log.printLog("Connect Fail")
         self.cmd.close()
       
   def isCanDown(self):

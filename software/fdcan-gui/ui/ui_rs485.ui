@@ -44,19 +44,89 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="combo_baud">
          <property name="minimumSize">
           <size>
            <width>300</width>
            <height>0</height>
           </size>
          </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <item>
+          <property name="text">
+           <string>9600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>19200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>38400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>57600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>115200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>230400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>460800</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>921600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4000000</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btn_open">
          <property name="text">
           <string>Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_close">
+         <property name="text">
+          <string>Close</string>
          </property>
         </widget>
        </item>
@@ -108,6 +178,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="btn_clear">
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -123,7 +200,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTextEdit" name="textEdit"/>
+      <widget class="QPlainTextEdit" name="text_log"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -131,7 +208,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="text_send"/>
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_2">
@@ -148,7 +225,31 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QComboBox" name="combo_return">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>LF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CR/LF</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_send">
          <property name="text">
           <string>Send</string>
          </property>

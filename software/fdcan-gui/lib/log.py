@@ -65,7 +65,8 @@ class LogWidget(QWidget):
 
   def write(self, data_bytes):    
     out_str = data_bytes.decode('utf-8')    
-    self.log.insertPlainText(out_str.replace('\r', ''))
+    out_str = out_str.replace('\r', '')
+    self.log.insertPlainText(out_str)
     self.log.moveCursor(QTextCursor.End)
 
   def writeLine(self, data_bytes):    

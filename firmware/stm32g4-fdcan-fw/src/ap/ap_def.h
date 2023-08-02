@@ -6,7 +6,8 @@
 
 
 
-typedef struct thread_t_ thread_t;
+typedef struct thread_t_      thread_t;
+typedef struct cmd_process_t_ cmd_process_t;
 
 
 typedef enum
@@ -22,5 +23,8 @@ typedef enum
 #define AP_EVENT_Q_MAX              8
 
 
+#define CMD_RS485_OPEN              0x0100
+#define CMD_RS485_CLOSE             0x0101
+#define CMD_RS485_DATA              0x0102
 
 #endif
