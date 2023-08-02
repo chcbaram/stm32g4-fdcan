@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QTextEdit, QVBoxLayout, QWidget)
+    QLineEdit, QPlainTextEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_RS485(object):
     def setupUi(self, RS485):
@@ -48,16 +48,34 @@ class Ui_RS485(object):
 
         self.horizontalLayout.addWidget(self.label)
 
-        self.comboBox = QComboBox(RS485)
-        self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setMinimumSize(QSize(300, 0))
+        self.combo_baud = QComboBox(RS485)
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.addItem("")
+        self.combo_baud.setObjectName(u"combo_baud")
+        self.combo_baud.setMinimumSize(QSize(300, 0))
+        self.combo_baud.setEditable(True)
 
-        self.horizontalLayout.addWidget(self.comboBox)
+        self.horizontalLayout.addWidget(self.combo_baud)
 
         self.btn_open = QPushButton(RS485)
         self.btn_open.setObjectName(u"btn_open")
 
         self.horizontalLayout.addWidget(self.btn_open)
+
+        self.btn_close = QPushButton(RS485)
+        self.btn_close.setObjectName(u"btn_close")
+
+        self.horizontalLayout.addWidget(self.btn_close)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -86,6 +104,11 @@ class Ui_RS485(object):
 
         self.horizontalLayout_3.addWidget(self.comboBox_3)
 
+        self.btn_clear = QPushButton(RS485)
+        self.btn_clear.setObjectName(u"btn_clear")
+
+        self.horizontalLayout_3.addWidget(self.btn_clear)
+
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
@@ -93,18 +116,18 @@ class Ui_RS485(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
-        self.textEdit = QTextEdit(RS485)
-        self.textEdit.setObjectName(u"textEdit")
+        self.text_log = QPlainTextEdit(RS485)
+        self.text_log.setObjectName(u"text_log")
 
-        self.verticalLayout.addWidget(self.textEdit)
+        self.verticalLayout.addWidget(self.text_log)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(-1, 0, -1, -1)
-        self.lineEdit = QLineEdit(RS485)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.text_send = QLineEdit(RS485)
+        self.text_send.setObjectName(u"text_send")
 
-        self.horizontalLayout_2.addWidget(self.lineEdit)
+        self.horizontalLayout_2.addWidget(self.text_send)
 
         self.comboBox_2 = QComboBox(RS485)
         self.comboBox_2.addItem("")
@@ -113,10 +136,19 @@ class Ui_RS485(object):
 
         self.horizontalLayout_2.addWidget(self.comboBox_2)
 
-        self.pushButton_3 = QPushButton(RS485)
-        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.combo_return = QComboBox(RS485)
+        self.combo_return.addItem("")
+        self.combo_return.addItem("")
+        self.combo_return.addItem("")
+        self.combo_return.addItem("")
+        self.combo_return.setObjectName(u"combo_return")
 
-        self.horizontalLayout_2.addWidget(self.pushButton_3)
+        self.horizontalLayout_2.addWidget(self.combo_return)
+
+        self.btn_send = QPushButton(RS485)
+        self.btn_send.setObjectName(u"btn_send")
+
+        self.horizontalLayout_2.addWidget(self.btn_send)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -133,14 +165,34 @@ class Ui_RS485(object):
     def retranslateUi(self, RS485):
         RS485.setWindowTitle(QCoreApplication.translate("RS485", u"Form", None))
         self.label.setText(QCoreApplication.translate("RS485", u"BAUD", None))
+        self.combo_baud.setItemText(0, QCoreApplication.translate("RS485", u"9600", None))
+        self.combo_baud.setItemText(1, QCoreApplication.translate("RS485", u"19200", None))
+        self.combo_baud.setItemText(2, QCoreApplication.translate("RS485", u"38400", None))
+        self.combo_baud.setItemText(3, QCoreApplication.translate("RS485", u"57600", None))
+        self.combo_baud.setItemText(4, QCoreApplication.translate("RS485", u"115200", None))
+        self.combo_baud.setItemText(5, QCoreApplication.translate("RS485", u"230400", None))
+        self.combo_baud.setItemText(6, QCoreApplication.translate("RS485", u"460800", None))
+        self.combo_baud.setItemText(7, QCoreApplication.translate("RS485", u"921600", None))
+        self.combo_baud.setItemText(8, QCoreApplication.translate("RS485", u"1000000", None))
+        self.combo_baud.setItemText(9, QCoreApplication.translate("RS485", u"2000000", None))
+        self.combo_baud.setItemText(10, QCoreApplication.translate("RS485", u"3000000", None))
+        self.combo_baud.setItemText(11, QCoreApplication.translate("RS485", u"4000000", None))
+
         self.btn_open.setText(QCoreApplication.translate("RS485", u"Open", None))
+        self.btn_close.setText(QCoreApplication.translate("RS485", u"Close", None))
         self.label_2.setText(QCoreApplication.translate("RS485", u"FORMAT", None))
         self.comboBox_3.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
         self.comboBox_3.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
 
+        self.btn_clear.setText(QCoreApplication.translate("RS485", u"Clear", None))
         self.comboBox_2.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
         self.comboBox_2.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
 
-        self.pushButton_3.setText(QCoreApplication.translate("RS485", u"Send", None))
+        self.combo_return.setItemText(0, QCoreApplication.translate("RS485", u"None", None))
+        self.combo_return.setItemText(1, QCoreApplication.translate("RS485", u"CR", None))
+        self.combo_return.setItemText(2, QCoreApplication.translate("RS485", u"LF", None))
+        self.combo_return.setItemText(3, QCoreApplication.translate("RS485", u"CR/LF", None))
+
+        self.btn_send.setText(QCoreApplication.translate("RS485", u"Send", None))
     # retranslateUi
 

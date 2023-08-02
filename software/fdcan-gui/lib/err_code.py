@@ -20,7 +20,7 @@ ERR_BOOT_JUMP_TO_FW    = 0x0012
 ERR_CMD_MAX_LENGTH     = 0x0020
 ERR_CMD_CHECKSUM       = 0x0021
 ERR_CMD_RX_TIMEOUT     = 0x0022
-ERR_CMD_RX_LENGTH      = 0x0023
+ERR_CMD_NO_CMD         = 0x0023
 
 class ErrCode:
   def __init__(self):
