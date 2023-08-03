@@ -80,15 +80,23 @@ class TabRS485(QWidget, Ui_RS485):
     text_len = len(self.text_send.text())
     if self.is_open:
       if self.combo_return.currentText() == "CR":        
-        send_buf = bytes(b'\x0D')
+        last_buf = bytes(b'\x0D')
       elif self.combo_return.currentText() == "LF":
-        send_buf = bytes(b'\x0A')
+        last_buf = bytes(b'\x0A')
       elif self.combo_return.currentText() == "CR/LF":
-        send_buf = bytes(b'\x0D\x0A')
+        last_buf = bytes(b'\x0D\x0A')
       else:
-        send_buf = bytes(0)
+        last_buf = bytes(0)
 
-      self.cmd_rs485.send(bytes(self.text_send.text(), 'utf-8') + send_buf)
+      if self.combo_send_format.currentText() == "ASCII":
+        send_buf = bytes(self.text_send.text(), 'utf-8') + last_buf
+        self.cmd_rs485.send(send_buf)
+      else:
+        text_str = self.text_send.text().split(" ")
+        out_str = ""
+        for ch_str in text_str:
+          out_str += bytes.fromhex(ch_str).decode('utf-8')
+        self.cmd_rs485.send(bytes(out_str, 'utf-8') + last_buf)
 
   def btnUpdate(self):
     if self.cmd.is_open == False:
@@ -113,7 +121,6 @@ class TabRS485(QWidget, Ui_RS485):
           self.combo_baud.setCurrentText(self.config_item['rs485_baud'])
         if self.config_item['rs485_send_ret'] is not None:
           self.combo_return.setCurrentText(self.config_item['rs485_send_ret'])
-        self.text_send.setText(self.config_item['rs485_send'])
       except Exception as e:
         print(e)
     else:
@@ -122,10 +129,12 @@ class TabRS485(QWidget, Ui_RS485):
   def saveConfig(self):  
     self.config_item['rs485_baud'] = str(self.combo_baud.currentText())
     self.config_item['rs485_send_ret'] = str(self.combo_return.currentText())
-    self.config_item['rs485_send'] = self.text_send.text()
 
     with open('config.ini', 'w') as configfile:
       self.config.write(configfile)
 
   def rxdEvent(self, packet: CmdPacket):
-    self.log.write(packet.data[:packet.length])
+    if self.combo_format.currentText() == "ASCII":
+      self.log.write(packet.data[:packet.length])  
+    else:
+      self.log.writeHex(packet.data[:packet.length])

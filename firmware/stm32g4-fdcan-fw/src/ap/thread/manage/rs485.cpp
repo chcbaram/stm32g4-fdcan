@@ -70,25 +70,17 @@ bool rs485Threadinit(void)
 
 bool rs485Threadupdate(void)
 {
-  if (modeObj()->getMode() == MODE_USB_TO_RS485 || modeObj()->getMode() == MODE_USB_TO_CAN)
-  {
-    is_enable = true;
-  }
-  else
-  {
+  if (modeObj()->getMode() == MODE_USB_TO_CLI && modeObj()->getType() == TYPE_USB_UART)
     is_enable = false;
-  }
+  else
+    is_enable = true;
 
   if (is_enable == true)
   {
     if (modeObj()->getType() == TYPE_USB_UART)
-    {
       rs485ThreadUpdateUart();
-    }
     else
-    {
       rs485ThreadUpdatePacket();
-    }
   }
   else
   {
@@ -270,6 +262,7 @@ bool rs485CmdData(cmd_t *p_cmd)
 {
   // USB -> RS485
   //
+  is_tx_update = true;
   uartWrite(HW_UART_CH_RS485, p_cmd->packet.data, p_cmd->packet.length);
   return true;
 }

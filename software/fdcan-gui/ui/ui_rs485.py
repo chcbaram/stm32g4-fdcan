@@ -97,12 +97,12 @@ class Ui_RS485(object):
 
         self.horizontalLayout_3.addWidget(self.label_2)
 
-        self.comboBox_3 = QComboBox(RS485)
-        self.comboBox_3.addItem("")
-        self.comboBox_3.addItem("")
-        self.comboBox_3.setObjectName(u"comboBox_3")
+        self.combo_format = QComboBox(RS485)
+        self.combo_format.addItem("")
+        self.combo_format.addItem("")
+        self.combo_format.setObjectName(u"combo_format")
 
-        self.horizontalLayout_3.addWidget(self.comboBox_3)
+        self.horizontalLayout_3.addWidget(self.combo_format)
 
         self.btn_clear = QPushButton(RS485)
         self.btn_clear.setObjectName(u"btn_clear")
@@ -129,12 +129,12 @@ class Ui_RS485(object):
 
         self.horizontalLayout_2.addWidget(self.text_send)
 
-        self.comboBox_2 = QComboBox(RS485)
-        self.comboBox_2.addItem("")
-        self.comboBox_2.addItem("")
-        self.comboBox_2.setObjectName(u"comboBox_2")
+        self.combo_send_format = QComboBox(RS485)
+        self.combo_send_format.addItem("")
+        self.combo_send_format.addItem("")
+        self.combo_send_format.setObjectName(u"combo_send_format")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_2)
+        self.horizontalLayout_2.addWidget(self.combo_send_format)
 
         self.combo_return = QComboBox(RS485)
         self.combo_return.addItem("")
@@ -181,12 +181,12 @@ class Ui_RS485(object):
         self.btn_open.setText(QCoreApplication.translate("RS485", u"Open", None))
         self.btn_close.setText(QCoreApplication.translate("RS485", u"Close", None))
         self.label_2.setText(QCoreApplication.translate("RS485", u"FORMAT", None))
-        self.comboBox_3.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
-        self.comboBox_3.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
+        self.combo_format.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
+        self.combo_format.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
 
         self.btn_clear.setText(QCoreApplication.translate("RS485", u"Clear", None))
-        self.comboBox_2.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
-        self.comboBox_2.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
+        self.combo_send_format.setItemText(0, QCoreApplication.translate("RS485", u"ASCII", None))
+        self.combo_send_format.setItemText(1, QCoreApplication.translate("RS485", u"HEX", None))
 
         self.combo_return.setItemText(0, QCoreApplication.translate("RS485", u"None", None))
         self.combo_return.setItemText(1, QCoreApplication.translate("RS485", u"CR", None))

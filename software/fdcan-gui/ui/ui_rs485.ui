@@ -164,7 +164,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_3">
+        <widget class="QComboBox" name="combo_format">
          <item>
           <property name="text">
            <string>ASCII</string>
@@ -211,7 +211,7 @@
         <widget class="QLineEdit" name="text_send"/>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="combo_send_format">
          <item>
           <property name="text">
            <string>ASCII</string>
