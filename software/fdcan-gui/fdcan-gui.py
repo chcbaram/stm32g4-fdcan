@@ -316,6 +316,8 @@ class MainWindow(QMainWindow):
     else:
       self.ui.btn_down.setEnabled(False)
 
+    self.tab_rs485.btnUpdate()
+
   def onStartDown(self):
     self.log.printLog("Down Start..")
     self.ui.btn_down.setEnabled(False)

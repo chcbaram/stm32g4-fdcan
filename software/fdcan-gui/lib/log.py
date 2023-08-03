@@ -69,6 +69,13 @@ class LogWidget(QWidget):
     self.log.insertPlainText(out_str)
     self.log.moveCursor(QTextCursor.End)
 
+  def writeHex(self, data_bytes):    
+    for ch in data_bytes:
+      out_str = f"0x{ch:X} "
+      self.log.insertPlainText(out_str)
+
+    self.log.moveCursor(QTextCursor.End)
+
   def writeLine(self, data_bytes):    
     out_str = data_bytes.decode('utf-8')
     out_str = out_str.replace('\r', '')
