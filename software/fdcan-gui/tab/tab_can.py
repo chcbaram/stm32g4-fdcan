@@ -220,7 +220,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.saveSendMsg()    
 
   def loadSendMsg(self):
-    if os.path.exists("config.ini") == False:
+    if os.path.exists("can_send.csv") == False:
       return
 
     with open('can_send.csv', 'r', newline='') as csvfile:
