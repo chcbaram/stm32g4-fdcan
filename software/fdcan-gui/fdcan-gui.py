@@ -39,9 +39,11 @@ class MainWindow(QMainWindow):
 
     self.font_size = 14
     self.update_file = ""
-    self.loadConfig()
+    self.tab_can = None
+    self.tab_rs485 = None
 
-    self.updateFontSize(self.font_size)
+    self.loadInit()
+    self.loadConfig()
 
     gui_ver = 'FDCAN-GUI 23-08-03'
     
@@ -56,10 +58,15 @@ class MainWindow(QMainWindow):
     self.is_fdcan = []
     self.down_thread = None
 
-    self.tab_can = TabCAN(self.ui)
+    self.syslog = LogWidget(self.ui.system_log)
+
+
+    self.tab_can = TabCAN(self.ui, self.cmd, self.config_item, self.syslog)
     self.ui.tabWidget.addTab(self.tab_can, "CAN")
-    self.tab_rs485 = TabRS485(self.ui, self.cmd)
+    self.tab_rs485 = TabRS485(self.ui, self.cmd, self.config_item, self.syslog)
     self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
+
+    self.updateFontSize(self.font_size)
 
     self.ui.action10.triggered.connect(lambda: self.updateFontSize(10))
     self.ui.action11.triggered.connect(lambda: self.updateFontSize(11))
@@ -73,6 +80,7 @@ class MainWindow(QMainWindow):
     self.setClickedEvent(self.ui.btn_down, self.btnDown)  
     self.setClickedEvent(self.ui.btn_down_stop, self.btnDownStop)  
     self.setClickedEvent(self.ui.btn_log_clear, self.btnLogClear)  
+    self.setClickedEvent(self.ui.btn_syslog_clear, self.btnSysLogClear)  
 
     self.ui.combo_device.currentTextChanged.connect(self.onComboDeviceChanged)
  
@@ -94,7 +102,7 @@ class MainWindow(QMainWindow):
     if packet.type == PKT_TYPE_UART:
       self.tab_rs485.rxdEvent(packet)
 
-  def loadConfig(self):        
+  def loadInit(self):        
     self.config = ConfigParser() 
     self.config.optionxform = lambda optionstr: optionstr
 
@@ -103,17 +111,22 @@ class MainWindow(QMainWindow):
 
     if os.path.exists("config.ini"):
       self.config.read('config.ini')  
-      try:
-        self.font_size = int(self.config_item['font_size'])
-        self.update_file = self.config_item['update_file']
-      except Exception as e:
-        print(e)
     else:
-      self.config_item['font_size'] = str(self.font_size)
       self.saveConfig()
 
+  def loadConfig(self):        
+    try:
+      self.font_size = int(self.config_item['font_size'])
+      self.update_file = self.config_item['update_file']
+    except Exception as e:
+      print(e)
 
   def saveConfig(self):  
+    if self.tab_can is not None: 
+      self.tab_can.saveConfig()
+    if self.tab_rs485 is not None:
+      self.tab_rs485.saveConfig()
+
     self.config_item['font_size'] = str(self.font_size)
     self.config_item['update_file'] = self.update_file
     with open('config.ini', 'w') as configfile:
@@ -200,6 +213,9 @@ class MainWindow(QMainWindow):
 
   def btnLogClear(self):
     self.log.clear()
+
+  def btnSysLogClear(self):
+    self.syslog.clear()
 
   def btnConnect(self):
     if self.ui.combo_device.count() == 0:
@@ -339,6 +355,7 @@ class MainWindow(QMainWindow):
     
 
   def closeEvent(self, QCloseEvent):
+    self.saveConfig()
     if self.down_thread is not None:
       self.down_thread.stop()     
     QCloseEvent.accept()
