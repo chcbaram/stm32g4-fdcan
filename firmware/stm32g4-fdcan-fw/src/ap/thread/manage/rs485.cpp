@@ -9,7 +9,6 @@
 static bool rs485Threadinit(void);
 static bool rs485Threadupdate(void);
 static bool rs485ThreadEvent(event_t *p_event);
-static void rs485ThreadISR(void *arg);
 static void rs485ThreadUpdateUart(void);
 static void rs485ThreadUpdatePacket(void);
 static bool rs485CmdOpen(cmd_t *p_cmd);
@@ -49,18 +48,6 @@ static uint32_t packet_baud = 19200;
 bool rs485Threadinit(void)
 {
   eventNodeAdd(rs485ThreadEvent);
-
-  swtimer_handle_t timer_ch;
-  timer_ch = swtimerGetHandle();
-  if (timer_ch >= 0)
-  {
-    swtimerSet(timer_ch, 10, LOOP_TIME, rs485ThreadISR, NULL);
-    swtimerStart(timer_ch);
-  }
-  else
-  {
-    logPrintf("[NG] rs485Threadinit()\n     swtimerGetHandle()\n");
-  }  
 
 #ifdef _USE_HW_CLI
   cliAdd("rs485", cliCmd);
@@ -164,74 +151,6 @@ bool rs485ThreadEvent(event_t *p_event)
   return true;
 }
 
-void rs485ThreadISR(void *arg)
-{
-  enum 
-  {
-    LED_IDLE, 
-    LED_ON,
-    LED_OFF,
-  };
-  static uint8_t  state_rx = LED_IDLE;
-  static uint32_t pre_time_rx;
-  static uint8_t  state_tx = LED_IDLE;
-  static uint32_t pre_time_tx;
-
-  switch(state_tx)
-  {
-    case LED_IDLE:
-      if (is_enable && is_tx_update)
-      {
-        is_tx_update = false;
-        state_tx = LED_ON;
-        ledOn(HW_LED_CH_TX);
-        pre_time_tx = millis();
-      }
-      break;
-    case LED_ON:
-      if (millis()-pre_time_tx >= 50)
-      {
-        state_tx = LED_OFF;
-        ledOff(HW_LED_CH_TX);
-        pre_time_tx = millis();
-      }
-      break;
-    case LED_OFF:
-      if (millis()-pre_time_tx >= 50)
-      {
-        state_tx = LED_IDLE;
-        pre_time_tx = millis();
-      }
-      break;
-  }
-  switch(state_rx)
-  {
-    case LED_IDLE:
-      if (is_enable && is_rx_update)
-      {
-        is_rx_update = false;
-        state_rx = LED_ON;
-        ledOn(HW_LED_CH_RX);
-        pre_time_rx = millis();
-      }
-      break;
-    case LED_ON:
-      if (millis()-pre_time_rx >= 50)
-      {
-        state_rx = LED_OFF;
-        ledOff(HW_LED_CH_RX);
-        pre_time_rx = millis();
-      }
-      break;
-    case LED_OFF:
-      if (millis()-pre_time_rx >= 50)
-      {
-        state_rx = LED_IDLE;
-        pre_time_rx = millis();
-      }
-      break;
-  }
-}
 
 bool rs485CmdOpen(cmd_t *p_cmd)
 {
@@ -265,6 +184,37 @@ bool rs485CmdData(cmd_t *p_cmd)
   is_tx_update = true;
   uartWrite(HW_UART_CH_RS485, p_cmd->packet.data, p_cmd->packet.length);
   return true;
+}
+
+static bool getTxUpdate(void)
+{
+  bool ret;
+
+  ret = is_tx_update;
+  is_tx_update = false;
+
+  return ret;
+}
+
+static bool getRxUpdate(void)
+{
+  bool ret;
+
+  ret = is_rx_update;
+  is_rx_update = false;
+
+  return ret;
+}
+
+rs485_obj_t *rs485Obj(void)
+{
+  static rs485_obj_t obj = 
+  {
+    .getTxUpdate = getTxUpdate,
+    .getRxUpdate = getRxUpdate
+  };
+
+  return &obj;
 }
 
 #ifdef _USE_HW_CLI

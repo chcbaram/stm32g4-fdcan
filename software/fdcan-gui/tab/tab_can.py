@@ -16,6 +16,9 @@ from ui.ui_can import *
 from ui.ui_main import *
 from configparser import ConfigParser
 
+from lib.cmd import *
+from lib.cmd_can import *
+
 
 
 class TabCAN(QWidget, Ui_CAN):
@@ -31,6 +34,7 @@ class TabCAN(QWidget, Ui_CAN):
 
     self.is_open = False
     self.cmd = cmd
+    self.cmd_can = CmdCAN(cmd)    
     self.config_item = config_item
     self.log = syslog
 
@@ -63,6 +67,9 @@ class TabCAN(QWidget, Ui_CAN):
 
   def btnUpdate(self):
     
+    if self.cmd.is_open == False:
+      self.is_open = False
+
     if self.is_open == True:
       self.btn_open.setEnabled(False)
       self.btn_close.setEnabled(True)
@@ -178,10 +185,21 @@ class TabCAN(QWidget, Ui_CAN):
       return
 
     if self.cmd.is_open:
-      # err_code, resp = self.cmd_rs485.open(int(self.combo_baud.currentText()))
-      # if err_code == OK:
-      #   self.is_open = True
-      #   self.saveConfig()
+      option = CmdCANOpen()
+      option.mode = self.combo_open_mode.currentIndex()
+      option.frame = CAN_CLASSIC
+      if self.check_open_canfd.isChecked():
+        if self.check_open_brs.isChecked():
+          option.frame = CAN_FD_BRS
+        else:
+          option.frame = CAN_FD_NO_BRS
+      option.baud = self.combo_open_rate_normal.currentIndex()
+      option.baud_data = self.combo_open_rate_data.currentIndex()
+
+      err_code, resp = self.cmd_can.open(option)
+      if err_code == OK:
+        self.is_open = True
+        self.saveConfig()
       self.is_open = True
     else:
       self.log.println("Not Connected")
@@ -189,6 +207,11 @@ class TabCAN(QWidget, Ui_CAN):
 
   def btnClose(self):  
     self.is_open = False
+    if self.cmd.is_open:
+      err_code, resp = self.cmd_can.close()
+    else:
+      self.log.println("Not Connected")
+    self.btnUpdate()
 
   def loadConfig(self):        
     try:
@@ -267,3 +290,6 @@ class TabCAN(QWidget, Ui_CAN):
           out_line.append("")
 
         writer.writerow(out_line)      
+
+  def rxdEvent(self, packet: CmdPacket):
+    print("can event")

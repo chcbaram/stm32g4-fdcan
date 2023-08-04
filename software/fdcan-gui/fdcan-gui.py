@@ -101,6 +101,8 @@ class MainWindow(QMainWindow):
     # packet = self.tab_rs485.event_q.get()
     if packet.type == PKT_TYPE_UART:
       self.tab_rs485.rxdEvent(packet)
+    if packet.type == PKT_TYPE_CAN:
+      self.tab_can.rxdEvent(packet)
 
   def loadInit(self):        
     self.config = ConfigParser() 
@@ -226,6 +228,8 @@ class MainWindow(QMainWindow):
 
     if self.cmd.is_open:
       self.cmd.close()
+
+      self.tab_can.btnUpdate()
       return   
 
     index = self.ui.combo_device.currentIndex() 

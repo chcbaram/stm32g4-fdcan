@@ -27,4 +27,8 @@ typedef enum
 #define CMD_RS485_CLOSE             0x0101
 #define CMD_RS485_DATA              0x0102
 
+#define CMD_CAN_OPEN                0x0110
+#define CMD_CAN_CLOSE               0x0111
+#define CMD_CAN_DATA                0x0112
+
 #endif

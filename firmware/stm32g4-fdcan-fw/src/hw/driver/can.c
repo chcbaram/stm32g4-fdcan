@@ -263,7 +263,13 @@ bool canIsOpen(uint8_t ch)
 
 void canClose(uint8_t ch)
 {
+  if(ch >= CAN_MAX_CH) return;
 
+  if (can_tbl[ch].is_open)
+  {
+    HAL_FDCAN_DeInit(&can_tbl[ch].hfdcan);
+  }
+  return;
 }
 
 bool canGetInfo(uint8_t ch, can_info_t *p_info)
@@ -536,7 +542,8 @@ void canDetachRxInterrupt(uint8_t ch)
 void canRecovery(uint8_t ch)
 {
   if(ch > CAN_MAX_CH) return;
-
+  if (can_tbl[ch].is_open != true) return;
+  
   HAL_FDCAN_Stop(&can_tbl[ch].hfdcan);
   HAL_FDCAN_Start(&can_tbl[ch].hfdcan);
 
