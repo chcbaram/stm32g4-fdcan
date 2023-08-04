@@ -5,6 +5,8 @@ import socket
 import serial
 import serial.tools.list_ports as sp
 import struct
+import csv
+import string
 
 from os import path
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QHBoxLayout
@@ -31,7 +33,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.cmd = cmd
     self.config_item = config_item
     self.log = syslog
-    
+
     self.combo_open_rate_normal.clear()
     self.combo_open_rate_data.clear()
     for item in self.bit_rate:
@@ -55,6 +57,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.table_can_tx.itemChanged.connect(self.updateCanTxTable)
 
     self.btnUpdate()
+    self.loadSendMsg()
 
   def btnUpdate(self):
     
@@ -103,7 +106,7 @@ class TabCAN(QWidget, Ui_CAN):
 
   def btnSend(self):
     pass
-    
+
   def btnAdd(self):
     row_pos = self.table_can_tx.rowCount()
     self.table_can_tx.insertRow(row_pos)
@@ -133,13 +136,38 @@ class TabCAN(QWidget, Ui_CAN):
 
     self.table_can_tx.cellWidget(row_pos, self.can_tx_head["Sel"]).layout().itemAt(0).widget().setChecked(True)
 
-    self.updateCanTxTable()
+    item = QTableWidgetItem("")
+    self.table_can_tx.setItem(row_pos, self.can_tx_head["Data"], item)
 
 
-  def updateCanTxTable(self):
+
+  def updateCanTxTable(self, item):
+    if item.column() == self.can_tx_head["ID"]:
+      if self.is_hex(item.text()):        
+        item.setText(item.text().upper())
+      else:
+        self.log.println("Not Hex")
+        item.setText("")
+    if item.column() == self.can_tx_head["Data"]:
+      item.setText(self.getCanDataLine(item.text()))
+
     self.table_can_tx.resizeColumnToContents(self.can_tx_head["DLC"])
     self.table_can_tx.resizeColumnToContents(self.can_tx_head["ID"])
     self.table_can_tx.viewport().update()
+
+  def is_hex(self, s):
+     hex_digits = set(string.hexdigits)
+     return all(c in hex_digits for c in s)
+
+  def getCanDataLine(self, can_msg_line):
+    line_list = can_msg_line.split(" ")
+    out_line = ""
+    for data in line_list:
+      data = data.upper()
+      if len(data) == 2 and self.is_hex(data):        
+        out_line += data + " "
+
+    return out_line
 
   def btnOpen(self):  
     if self.is_open == True:
@@ -173,6 +201,7 @@ class TabCAN(QWidget, Ui_CAN):
 
       self.combo_open_rate_normal.setCurrentIndex(int(self.config_item['can_open_rate_normal']))
       self.combo_open_rate_data.setCurrentIndex(int(self.config_item['can_open_rate_data']))
+      self.combo_open_mode.setCurrentIndex(int(self.config_item['can_open_mode']))
       self.combo_tx_dlc.setCurrentIndex(int(self.config_item['can_tx_dlc']))
       self.text_tx_id.setText(self.config_item['can_tx_id'])
     except Exception as e:
@@ -183,7 +212,56 @@ class TabCAN(QWidget, Ui_CAN):
     self.config_item['can_open_brs'] = str(self.check_open_brs.isChecked())
     self.config_item['can_open_rate_normal'] = str(self.combo_open_rate_normal.currentIndex())
     self.config_item['can_open_rate_data'] = str(self.combo_open_rate_data.currentIndex())
+    self.config_item['can_open_mode'] = str(self.combo_open_mode.currentIndex())
     self.config_item['can_tx_extid'] = str(self.check_tx_extid.isChecked())
     self.config_item['can_tx_brs'] = str(self.check_tx_brs.isChecked())
     self.config_item['can_tx_dlc'] = str(self.combo_tx_dlc.currentIndex())
     self.config_item['can_tx_id'] = self.text_tx_id.text()
+    self.saveSendMsg()    
+
+  def loadSendMsg(self):
+    if os.path.exists("config.ini") == False:
+      return
+
+    with open('can_send.csv', 'r', newline='') as csvfile:
+      check = {"True":True, "False":False}
+      
+      reader = csv.reader(csvfile)
+      first_line = True
+      for line in reader:
+        if first_line:
+          first_line = False
+          continue
+
+        self.btnAdd()
+        row_pos = self.table_can_tx.rowCount() - 1
+        self.table_can_tx.cellWidget(row_pos, 0).layout().itemAt(0).widget().setChecked(check[line[0]])
+        self.table_can_tx.item(row_pos, 1).setText(line[1])
+        self.table_can_tx.cellWidget(row_pos, 2).layout().itemAt(0).widget().setChecked(check[line[2]])
+        self.table_can_tx.cellWidget(row_pos, 3).layout().itemAt(0).widget().setChecked(check[line[3]])
+        self.table_can_tx.cellWidget(row_pos, 4).layout().itemAt(0).widget().setChecked(check[line[4]])
+        self.table_can_tx.cellWidget(row_pos, 5).layout().itemAt(0).widget().setCurrentIndex(int(line[5]))
+        self.table_can_tx.item(row_pos, 6).setText(line[6])
+
+  def saveSendMsg(self):
+    columns = range(self.table_can_tx.columnCount())
+    header = [self.table_can_tx.horizontalHeaderItem(column).text() 
+              for column in columns]
+
+    with open('can_send.csv', 'w', encoding='utf-8', newline='') as csvfile:
+      writer = csv.writer(csvfile)
+      writer.writerow(header)
+      for row in range(self.table_can_tx.rowCount()):
+        out_line = []
+        out_line.append(str(self.table_can_tx.cellWidget(row, 0).layout().itemAt(0).widget().isChecked()))
+        out_line.append(self.table_can_tx.item(row, 1).text())
+        out_line.append(str(self.table_can_tx.cellWidget(row, 2).layout().itemAt(0).widget().isChecked()))
+        out_line.append(str(self.table_can_tx.cellWidget(row, 3).layout().itemAt(0).widget().isChecked()))
+        out_line.append(str(self.table_can_tx.cellWidget(row, 4).layout().itemAt(0).widget().isChecked()))
+        out_line.append(str(self.table_can_tx.cellWidget(row, 5).layout().itemAt(0).widget().currentIndex()))
+        if self.table_can_tx.item(row, 6) is not None:
+          out_line.append(self.table_can_tx.item(row, 6).text())
+        else:
+          out_line.append("")
+
+        writer.writerow(out_line)      

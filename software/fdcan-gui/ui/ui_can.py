@@ -17,9 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
     QFrame, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QSplitter, QTableWidget, QTableWidgetItem, QVBoxLayout,
-    QWidget)
+    QLineEdit, QPushButton, QRadioButton, QSizePolicy,
+    QSpacerItem, QSplitter, QTableWidget, QTableWidgetItem,
+    QVBoxLayout, QWidget)
 
 class Ui_CAN(object):
     def setupUi(self, CAN):
@@ -52,6 +52,19 @@ class Ui_CAN(object):
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(-1, 0, -1, -1)
+        self.combo_open_mode = QComboBox(self.frame)
+        self.combo_open_mode.addItem("")
+        self.combo_open_mode.addItem("")
+        self.combo_open_mode.addItem("")
+        self.combo_open_mode.setObjectName(u"combo_open_mode")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.combo_open_mode.sizePolicy().hasHeightForWidth())
+        self.combo_open_mode.setSizePolicy(sizePolicy1)
+
+        self.horizontalLayout.addWidget(self.combo_open_mode)
+
         self.check_open_canfd = QCheckBox(self.frame)
         self.check_open_canfd.setObjectName(u"check_open_canfd")
 
@@ -113,6 +126,70 @@ class Ui_CAN(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(-1, 0, -1, -1)
+        self.comboBox = QComboBox(self.frame)
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.setObjectName(u"comboBox")
+
+        self.horizontalLayout_3.addWidget(self.comboBox)
+
+        self.radioButton = QRadioButton(self.frame)
+        self.radioButton.setObjectName(u"radioButton")
+        self.radioButton.setChecked(True)
+
+        self.horizontalLayout_3.addWidget(self.radioButton)
+
+        self.radioButton_2 = QRadioButton(self.frame)
+        self.radioButton_2.setObjectName(u"radioButton_2")
+
+        self.horizontalLayout_3.addWidget(self.radioButton_2)
+
+        self.line_4 = QFrame(self.frame)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.VLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout_3.addWidget(self.line_4)
+
+        self.label_6 = QLabel(self.frame)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_3.addWidget(self.label_6)
+
+        self.lineEdit = QLineEdit(self.frame)
+        self.lineEdit.setObjectName(u"lineEdit")
+        sizePolicy1.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
+        self.lineEdit.setSizePolicy(sizePolicy1)
+
+        self.horizontalLayout_3.addWidget(self.lineEdit)
+
+        self.label_7 = QLabel(self.frame)
+        self.label_7.setObjectName(u"label_7")
+
+        self.horizontalLayout_3.addWidget(self.label_7)
+
+        self.lineEdit_2 = QLineEdit(self.frame)
+        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        sizePolicy1.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
+        self.lineEdit_2.setSizePolicy(sizePolicy1)
+
+        self.horizontalLayout_3.addWidget(self.lineEdit_2)
+
+        self.pushButton = QPushButton(self.frame)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.horizontalLayout_3.addWidget(self.pushButton)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+
         self.table_can_rx = QTableWidget(self.frame)
         if (self.table_can_rx.columnCount() < 6):
             self.table_can_rx.setColumnCount(6)
@@ -129,11 +206,11 @@ class Ui_CAN(object):
         __qtablewidgetitem5 = QTableWidgetItem()
         self.table_can_rx.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.table_can_rx.setObjectName(u"table_can_rx")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.table_can_rx.sizePolicy().hasHeightForWidth())
-        self.table_can_rx.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.table_can_rx.sizePolicy().hasHeightForWidth())
+        self.table_can_rx.setSizePolicy(sizePolicy2)
         self.table_can_rx.setAlternatingRowColors(True)
         self.table_can_rx.setSelectionMode(QAbstractItemView.NoSelection)
         self.table_can_rx.setSelectionBehavior(QAbstractItemView.SelectItems)
@@ -186,11 +263,8 @@ class Ui_CAN(object):
 
         self.text_tx_id = QLineEdit(self.frame_2)
         self.text_tx_id.setObjectName(u"text_tx_id")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.text_tx_id.sizePolicy().hasHeightForWidth())
-        self.text_tx_id.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.text_tx_id.sizePolicy().hasHeightForWidth())
+        self.text_tx_id.setSizePolicy(sizePolicy1)
         self.text_tx_id.setMinimumSize(QSize(0, 0))
 
         self.horizontalLayout_2.addWidget(self.text_tx_id)
@@ -291,12 +365,24 @@ class Ui_CAN(object):
 
     def retranslateUi(self, CAN):
         CAN.setWindowTitle(QCoreApplication.translate("CAN", u"Form", None))
+        self.combo_open_mode.setItemText(0, QCoreApplication.translate("CAN", u"NORMAL", None))
+        self.combo_open_mode.setItemText(1, QCoreApplication.translate("CAN", u"MONITOR", None))
+        self.combo_open_mode.setItemText(2, QCoreApplication.translate("CAN", u"LOOPBACK", None))
+
         self.check_open_canfd.setText(QCoreApplication.translate("CAN", u"FD", None))
         self.check_open_brs.setText(QCoreApplication.translate("CAN", u"BRS", None))
         self.label.setText(QCoreApplication.translate("CAN", u"Normal", None))
         self.label_2.setText(QCoreApplication.translate("CAN", u"Data", None))
         self.btn_open.setText(QCoreApplication.translate("CAN", u"Open", None))
         self.btn_close.setText(QCoreApplication.translate("CAN", u"Close", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("CAN", u"MASK", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("CAN", u"RANGE", None))
+
+        self.radioButton.setText(QCoreApplication.translate("CAN", u"STD", None))
+        self.radioButton_2.setText(QCoreApplication.translate("CAN", u"EXT", None))
+        self.label_6.setText(QCoreApplication.translate("CAN", u"ID", None))
+        self.label_7.setText(QCoreApplication.translate("CAN", u"MASK", None))
+        self.pushButton.setText(QCoreApplication.translate("CAN", u"Set", None))
         ___qtablewidgetitem = self.table_can_rx.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"Time", None));
         ___qtablewidgetitem1 = self.table_can_rx.horizontalHeaderItem(1)
