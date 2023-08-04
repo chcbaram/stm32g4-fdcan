@@ -99,7 +99,7 @@
          <item>
           <widget class="QCheckBox" name="check_open_canfd">
            <property name="text">
-            <string>FD</string>
+            <string>FD </string>
            </property>
           </widget>
          </item>
@@ -180,9 +180,15 @@
          </property>
          <item>
           <widget class="QComboBox" name="comboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <item>
             <property name="text">
-             <string>MASK</string>
+             <string>MASK     </string>
             </property>
            </item>
            <item>
@@ -432,6 +438,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="combo_tx_dlc">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <item>
             <property name="text">
              <string>0</string>
@@ -589,7 +601,7 @@
           <number>50</number>
          </attribute>
          <attribute name="horizontalHeaderDefaultSectionSize">
-          <number>19</number>
+          <number>50</number>
          </attribute>
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>

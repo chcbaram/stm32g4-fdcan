@@ -136,6 +136,9 @@ class MainWindow(QMainWindow):
     self.font_size = font_size
     self.setFont(QFont("D2Coding", font_size))
     self.ui.log_text.setFont(QFont("D2Coding", font_size))
+    self.tab_can.table_can_rx.setFont(QFont("D2Coding", font_size))
+    self.tab_can.table_can_tx.setFont(QFont("D2Coding", font_size))
+
     font_check = [[10,self.ui.action10],
                   [11,self.ui.action11], 
                   [12,self.ui.action12], 

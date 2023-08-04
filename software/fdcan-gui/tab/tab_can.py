@@ -59,6 +59,8 @@ class TabCAN(QWidget, Ui_CAN):
     self.btnUpdate()
     self.loadSendMsg()
 
+    self.table_can_tx.resizeColumnsToContents()
+
   def btnUpdate(self):
     
     if self.is_open == True:

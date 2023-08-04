@@ -133,6 +133,8 @@ class Ui_CAN(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.setObjectName(u"comboBox")
+        sizePolicy1.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
+        self.comboBox.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_3.addWidget(self.comboBox)
 
@@ -292,6 +294,8 @@ class Ui_CAN(object):
         self.combo_tx_dlc.addItem("")
         self.combo_tx_dlc.addItem("")
         self.combo_tx_dlc.setObjectName(u"combo_tx_dlc")
+        sizePolicy1.setHeightForWidth(self.combo_tx_dlc.sizePolicy().hasHeightForWidth())
+        self.combo_tx_dlc.setSizePolicy(sizePolicy1)
 
         self.horizontalLayout_2.addWidget(self.combo_tx_dlc)
 
@@ -348,7 +352,7 @@ class Ui_CAN(object):
         self.table_can_tx.setRowCount(0)
         self.table_can_tx.horizontalHeader().setCascadingSectionResizes(False)
         self.table_can_tx.horizontalHeader().setMinimumSectionSize(50)
-        self.table_can_tx.horizontalHeader().setDefaultSectionSize(19)
+        self.table_can_tx.horizontalHeader().setDefaultSectionSize(50)
         self.table_can_tx.horizontalHeader().setStretchLastSection(True)
 
         self.verticalLayout_2.addWidget(self.table_can_tx)
@@ -369,13 +373,13 @@ class Ui_CAN(object):
         self.combo_open_mode.setItemText(1, QCoreApplication.translate("CAN", u"MONITOR", None))
         self.combo_open_mode.setItemText(2, QCoreApplication.translate("CAN", u"LOOPBACK", None))
 
-        self.check_open_canfd.setText(QCoreApplication.translate("CAN", u"FD", None))
+        self.check_open_canfd.setText(QCoreApplication.translate("CAN", u"FD ", None))
         self.check_open_brs.setText(QCoreApplication.translate("CAN", u"BRS", None))
         self.label.setText(QCoreApplication.translate("CAN", u"Normal", None))
         self.label_2.setText(QCoreApplication.translate("CAN", u"Data", None))
         self.btn_open.setText(QCoreApplication.translate("CAN", u"Open", None))
         self.btn_close.setText(QCoreApplication.translate("CAN", u"Close", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("CAN", u"MASK", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("CAN", u"MASK     ", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("CAN", u"RANGE", None))
 
         self.radioButton.setText(QCoreApplication.translate("CAN", u"STD", None))
