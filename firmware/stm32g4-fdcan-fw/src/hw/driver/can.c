@@ -109,7 +109,7 @@ typedef struct
 static can_tbl_t can_tbl[CAN_MAX_CH];
 
 static volatile uint32_t err_int_cnt = 0;
-
+static CanFilterType_t can_filter_type = CAN_ID_MASK;
 
 #ifdef _USE_HW_CLI
 static void cliCan(cli_args_t *args);
@@ -182,7 +182,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
       p_can->Init.ClockDivider          = FDCAN_CLOCK_DIV1;
       p_can->Init.FrameFormat           = frame_tbl[frame];
       p_can->Init.Mode                  = mode_tbl[mode];
-      p_can->Init.AutoRetransmission    = ENABLE;
+      p_can->Init.AutoRetransmission    = DISABLE;
       p_can->Init.TransmitPause         = ENABLE;
       p_can->Init.ProtocolException     = ENABLE;
       p_can->Init.NominalPrescaler      = p_baud_normal[baud].prescaler;
@@ -206,6 +206,8 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
                                           FDCAN_IT_BUS_OFF |
                                           FDCAN_IT_ERROR_WARNING |
                                           FDCAN_IT_ERROR_PASSIVE;
+
+      can_tbl[ch].err_code              = CAN_ERR_NONE;
       ret = true;
       break;
   }
@@ -220,8 +222,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
     return false;
   }
 
-
-
+  canSetFilterType(CAN_ID_MASK);
   canConfigFilter(ch, 0, CAN_STD, 0x0000, 0x0000);
   canConfigFilter(ch, 0, CAN_EXT, 0x0000, 0x0000);
 
@@ -263,7 +264,13 @@ bool canIsOpen(uint8_t ch)
 
 void canClose(uint8_t ch)
 {
+  if(ch >= CAN_MAX_CH) return;
 
+  if (can_tbl[ch].is_open)
+  {
+    HAL_FDCAN_DeInit(&can_tbl[ch].hfdcan);
+  }
+  return;
 }
 
 bool canGetInfo(uint8_t ch, can_info_t *p_info)
@@ -309,6 +316,18 @@ uint8_t canGetLen(CanDlc_t dlc)
   return dlc_len_tbl[(int)dlc];
 }
 
+bool canSetFilterType(CanFilterType_t filter_type)
+{
+  can_filter_type = filter_type;
+  return true;
+}
+
+bool canGetFilterType(CanFilterType_t *p_filter_type)
+{
+  *p_filter_type = can_filter_type;
+  return true;
+}
+
 bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask)
 {
   bool ret = false;
@@ -337,7 +356,10 @@ bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id
   }
 
   sFilterConfig.FilterIndex   = index;
-  sFilterConfig.FilterType    = FDCAN_FILTER_MASK;
+  if (can_filter_type == CAN_ID_MASK)
+    sFilterConfig.FilterType    = FDCAN_FILTER_MASK;
+  else
+    sFilterConfig.FilterType    = FDCAN_FILTER_RANGE;
   sFilterConfig.FilterID1     = id;
   sFilterConfig.FilterID2     = id_mask;
 
@@ -536,6 +558,9 @@ void canDetachRxInterrupt(uint8_t ch)
 void canRecovery(uint8_t ch)
 {
   if(ch > CAN_MAX_CH) return;
+  if (can_tbl[ch].is_open != true) return;
+  
+  can_tbl[ch].err_code = CAN_ERR_NONE;
 
   HAL_FDCAN_Stop(&can_tbl[ch].hfdcan);
   HAL_FDCAN_Start(&can_tbl[ch].hfdcan);
@@ -1088,7 +1113,7 @@ void cliCan(cli_args_t *args)
     {
       can_msg_t msg;
 
-      if (millis()-pre_time >= 1000)
+      if (millis()-pre_time >= 1)
       {
         pre_time = millis();
 

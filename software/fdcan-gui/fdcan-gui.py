@@ -39,11 +39,13 @@ class MainWindow(QMainWindow):
 
     self.font_size = 14
     self.update_file = ""
+    self.tab_can = None
+    self.tab_rs485 = None
+
+    self.loadInit()
     self.loadConfig()
 
-    self.updateFontSize(self.font_size)
-
-    gui_ver = 'FDCAN-GUI 23-08-03'
+    gui_ver = 'FDCAN-GUI 23-08-05'
     
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
@@ -56,10 +58,15 @@ class MainWindow(QMainWindow):
     self.is_fdcan = []
     self.down_thread = None
 
-    self.tab_can = TabCAN(self.ui)
+    self.syslog = LogWidget(self.ui.system_log)
+
+
+    self.tab_can = TabCAN(self.ui, self.cmd, self.config_item, self.syslog)
     self.ui.tabWidget.addTab(self.tab_can, "CAN")
-    self.tab_rs485 = TabRS485(self.ui, self.cmd)
+    self.tab_rs485 = TabRS485(self.ui, self.cmd, self.config_item, self.syslog)
     self.ui.tabWidget.addTab(self.tab_rs485, "RS485")
+
+    self.updateFontSize(self.font_size)
 
     self.ui.action10.triggered.connect(lambda: self.updateFontSize(10))
     self.ui.action11.triggered.connect(lambda: self.updateFontSize(11))
@@ -69,10 +76,12 @@ class MainWindow(QMainWindow):
 
     self.setClickedEvent(self.ui.btn_scan, self.btnScan)  
     self.setClickedEvent(self.ui.btn_open, self.btnOpen)  
+    self.setClickedEvent(self.ui.btn_led, self.btnLed)  
     self.setClickedEvent(self.ui.btn_connect, self.btnConnect)  
     self.setClickedEvent(self.ui.btn_down, self.btnDown)  
     self.setClickedEvent(self.ui.btn_down_stop, self.btnDownStop)  
     self.setClickedEvent(self.ui.btn_log_clear, self.btnLogClear)  
+    self.setClickedEvent(self.ui.btn_syslog_clear, self.btnSysLogClear)  
 
     self.ui.combo_device.currentTextChanged.connect(self.onComboDeviceChanged)
  
@@ -93,8 +102,10 @@ class MainWindow(QMainWindow):
     # packet = self.tab_rs485.event_q.get()
     if packet.type == PKT_TYPE_UART:
       self.tab_rs485.rxdEvent(packet)
+    if packet.type == PKT_TYPE_CAN:
+      self.tab_can.rxdEvent(packet)
 
-  def loadConfig(self):        
+  def loadInit(self):        
     self.config = ConfigParser() 
     self.config.optionxform = lambda optionstr: optionstr
 
@@ -103,17 +114,22 @@ class MainWindow(QMainWindow):
 
     if os.path.exists("config.ini"):
       self.config.read('config.ini')  
-      try:
-        self.font_size = int(self.config_item['font_size'])
-        self.update_file = self.config_item['update_file']
-      except Exception as e:
-        print(e)
     else:
-      self.config_item['font_size'] = str(self.font_size)
       self.saveConfig()
 
+  def loadConfig(self):        
+    try:
+      self.font_size = int(self.config_item['font_size'])
+      self.update_file = self.config_item['update_file']
+    except Exception as e:
+      print(e)
 
   def saveConfig(self):  
+    if self.tab_can is not None: 
+      self.tab_can.saveConfig()
+    if self.tab_rs485 is not None:
+      self.tab_rs485.saveConfig()
+
     self.config_item['font_size'] = str(self.font_size)
     self.config_item['update_file'] = self.update_file
     with open('config.ini', 'w') as configfile:
@@ -123,6 +139,9 @@ class MainWindow(QMainWindow):
     self.font_size = font_size
     self.setFont(QFont("D2Coding", font_size))
     self.ui.log_text.setFont(QFont("D2Coding", font_size))
+    self.tab_can.view_can_rx.setFont(QFont("D2Coding", font_size))
+    self.tab_can.table_can_tx.setFont(QFont("D2Coding", font_size))
+
     font_check = [[10,self.ui.action10],
                   [11,self.ui.action11], 
                   [12,self.ui.action12], 
@@ -198,8 +217,14 @@ class MainWindow(QMainWindow):
       self.updateFileList(fname)
       self.showFileInfo()
 
+  def btnLed(self):
+    err_code, resp = self.cmd_boot.ledToggle(100)
+
   def btnLogClear(self):
     self.log.clear()
+
+  def btnSysLogClear(self):
+    self.syslog.clear()
 
   def btnConnect(self):
     if self.ui.combo_device.count() == 0:
@@ -207,6 +232,8 @@ class MainWindow(QMainWindow):
 
     if self.cmd.is_open:
       self.cmd.close()
+
+      self.tab_can.btnUpdate()
       return   
 
     index = self.ui.combo_device.currentIndex() 
@@ -218,7 +245,11 @@ class MainWindow(QMainWindow):
 
     self.log.printLog("BAUD : " + str(baud))
 
-    self.cmd.open(port, baud)
+    ret = self.cmd.open(port, baud)
+    if ret == False:
+      self.log.printLog("Uart Open Fail")
+      return
+
     time.sleep(0.1)
     if self.is_fdcan[index] == True:
       is_connected = False
@@ -313,8 +344,10 @@ class MainWindow(QMainWindow):
 
     if self.cmd.is_open and self.ui.combo_file.count() > 0:
       self.ui.btn_down.setEnabled(True)
+      self.ui.btn_led.setEnabled(True)
     else:
       self.ui.btn_down.setEnabled(False)
+      self.ui.btn_led.setEnabled(False)
 
     self.tab_rs485.btnUpdate()
 
@@ -339,6 +372,7 @@ class MainWindow(QMainWindow):
     
 
   def closeEvent(self, QCloseEvent):
+    self.saveConfig()
     if self.down_thread is not None:
       self.down_thread.stop()     
     QCloseEvent.accept()

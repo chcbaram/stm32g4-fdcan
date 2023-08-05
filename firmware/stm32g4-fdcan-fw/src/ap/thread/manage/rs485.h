@@ -5,4 +5,13 @@
 #include "ap_def.h"
 
 
+typedef struct
+{
+  bool (*getTxUpdate)(void);
+  bool (*getRxUpdate)(void);
+} rs485_obj_t;
+
+
+rs485_obj_t *rs485Obj(void);
+
 #endif

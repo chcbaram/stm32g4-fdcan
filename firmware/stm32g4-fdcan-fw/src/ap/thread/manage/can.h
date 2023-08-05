@@ -4,5 +4,13 @@
 
 #include "ap_def.h"
 
+typedef struct
+{
+  bool (*getTxUpdate)(void);
+  bool (*getRxUpdate)(void);
+} can_obj_t;
+
+
+can_obj_t *canObj(void);
 
 #endif

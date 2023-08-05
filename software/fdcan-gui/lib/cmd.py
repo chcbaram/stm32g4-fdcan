@@ -191,6 +191,8 @@ class Cmd(QObject):
     self.is_init = False
     self.is_open = False
     self.resp_q = Queue(1)
+    self.mutex = QMutex()
+    self.mutex_send = QMutex()
 
     self.uart_port = serial.Serial(timeout=0.1)   
     self.rxd_thread = CmdThread(self.uart_port, self.resp_q)    
@@ -234,10 +236,13 @@ class Cmd(QObject):
     if self.uart_port is not None:
       if self.uart_port.is_open == True:
         self.is_open = False
-        self.uart_port.cancel_read()
-        self.uart_port.cancel_write() 
-        self.uart_port.close()        
-        print('Uart::close()')
+        try:
+          self.uart_port.cancel_read()
+          self.uart_port.cancel_write() 
+          self.uart_port.close()        
+          print('Uart::close()')
+        except:
+          pass
 
   def send(self, type, cmd, err_code, data, length):
     index = 0
@@ -267,12 +272,15 @@ class Cmd(QObject):
     index += 1
 
     self.uart_port.write_timeout = 5
+    self.mutex_send.lock()
     tx_len = self.uart_port.write(buffer)
+    self.mutex_send.unlock()
 
   def sendCmd(self, cmd, data, length):
     self.send(PKT_TYPE_CMD, cmd, 0, data, length)
 
   def sendCmdRxResp(self, cmd, data, length, timeout_ms):
+    self.mutex.lock()
     if self.resp_q.qsize() > 0:
       self.resp_q.get()
     self.sendCmd(cmd, data, length)
@@ -284,7 +292,7 @@ class Cmd(QObject):
       ret = True
     except:
       ret_packet = None
-
+    self.mutex.unlock()
     return ret, ret_packet
 
 
@@ -296,9 +304,6 @@ class Cmd(QObject):
 
   def getPacket(self):
     return self.rxd_packet
-
-  # def setRxdSignal(self, rxd_func):
-  #   self.rxd_thread.setRxdSignal(rxd_func)
 
   def print(self):
     pre_time = millis()
