@@ -279,7 +279,14 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="view_can_rx"/>
+        <widget class="QTableView" name="view_can_rx">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -300,6 +307,20 @@
           <widget class="QPushButton" name="btn_clear_rx_msg">
            <property name="text">
             <string>Clear</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_save_rx">
+           <property name="text">
+            <string>Save</string>
            </property>
           </widget>
          </item>

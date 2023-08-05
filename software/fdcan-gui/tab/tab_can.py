@@ -44,6 +44,11 @@ class TableModel(QtCore.QAbstractTableModel):
       elif role == QtCore.Qt.TextAlignmentRole:
         if index.column() <= 4:
           return QtCore.Qt.AlignCenter
+      elif role == QtCore.Qt.EditRole:
+        return str(self._data.iloc[index.row(), index.column()])
+      elif role == Qt.BackgroundRole:
+        if self._data.iloc[index.row(), 2] == "tx":
+          return QBrush(Qt.GlobalColor.gray)        
     return None
 
   def headerData(self, rowcol, orientation, role):
@@ -128,6 +133,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.setClickedEvent(self.btn_del, self.btnDel)
     self.setClickedEvent(self.btn_clear_rx_msg, self.btnClearRxMsg)
     self.setClickedEvent(self.btn_filter_set, self.btnFilterSet)
+    self.setClickedEvent(self.btn_save_rx, self.btnSaveRxTable)
 
 
     self.check_open_canfd.stateChanged.connect(self.btnUpdate)  
@@ -263,6 +269,7 @@ class TabCAN(QWidget, Ui_CAN):
         can_msg.data[i] = 0x00
 
       self.cmd_can.send(can_msg)
+      self.addCanRxMsg(can_msg, "tx")
 
 
   def btnDel(self):
@@ -270,6 +277,11 @@ class TabCAN(QWidget, Ui_CAN):
     if len(items) > 0:
       self.table_can_tx.removeRow(items[0].row())
     return
+
+  def btnSaveRxTable(self):
+    fname = QFileDialog.getSaveFileName(self, "Save File", "", selectedFilter="*.csv")
+    if len(fname[0]) > 0:
+      self.saveRxTableToFile(fname[0])
 
   def insertCanTxLine(self):
     row_pos = self.table_can_tx.rowCount()
@@ -405,6 +417,9 @@ class TabCAN(QWidget, Ui_CAN):
       else:
         self.log.printLog("setFilter() Fail")    
 
+  def saveRxTableToFile(self, file_name):
+    self.dataframe.to_csv(file_name)
+
   def updateFromFilter(self):
     self.combo_filter_type.setCurrentIndex(self.can_filter.type)
     if self.can_filter.id_type == CAN_STD:
@@ -505,14 +520,12 @@ class TabCAN(QWidget, Ui_CAN):
 
         writer.writerow(out_line)      
 
-  def receiveCanMsg(self, packet: CmdPacket):
-    can_msg = CmdCANPacket()
-    can_msg.setCmdPacket(packet)
-    
+  def addCanRxMsg(self, can_msg: CmdCANPacket, dir_str):    
     msg_item = []
-    msg_item.append(str(can_msg.timestamp))
+    # msg_item.append(str(can_msg.timestamp))
+    msg_item.append(str(int(round(time.time() * 1000))%0x10000))
     msg_item.append(str(hex(can_msg.id)))
-    msg_item.append("rx")
+    msg_item.append(dir_str)
 
     if can_msg.id_type == 0:
       frame_str = "STD "
@@ -531,6 +544,12 @@ class TabCAN(QWidget, Ui_CAN):
     msg_item.append(can_msg.data[:can_msg.length].hex(" "))
 
     self.tm.addDataOnly(msg_item)
+    return
+
+  def receiveCanMsg(self, packet: CmdPacket):
+    can_msg = CmdCANPacket()
+    can_msg.setCmdPacket(packet)
+    self.addCanRxMsg(can_msg, "rx")
     return
     
     
