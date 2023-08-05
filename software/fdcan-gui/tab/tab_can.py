@@ -7,10 +7,12 @@ import serial.tools.list_ports as sp
 import struct
 import csv
 import string
+import pandas as pd
 
 from os import path
+from PySide6 import QtCore
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QHBoxLayout
-from PySide6.QtCore import QFile
+from PySide6.QtCore import QFile, QAbstractTableModel
 from PySide6.QtGui import *
 from ui.ui_can import *
 from ui.ui_main import *
@@ -18,6 +20,60 @@ from configparser import ConfigParser
 
 from lib.cmd import *
 from lib.cmd_can import *
+
+
+class TableModel(QtCore.QAbstractTableModel):
+  def __init__(self, data, parent=None):
+    super(TableModel, self).__init__(parent)
+    self._data = data
+
+  def rowCount(self, parent=None):
+    return len(self._data.index)
+
+  def columnCount(self, parent=None):
+    return self._data.columns.size
+
+  def data(self, index, role=QtCore.Qt.DisplayRole):
+    if index.isValid():
+      if role == QtCore.Qt.DisplayRole:
+        return str(self._data.iloc[index.row(), index.column()])
+      elif role == QtCore.Qt.TextAlignmentRole:
+        if index.column() <= 4:
+          return QtCore.Qt.AlignCenter
+    return None
+
+  def headerData(self, rowcol, orientation, role):
+    if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+      return self._data.columns[rowcol]
+    if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
+      return rowcol
+    return None
+
+  def flags(self, index):
+    flags = super(self.__class__, self).flags(index)
+    flags |= QtCore.Qt.ItemIsEditable
+    flags |= QtCore.Qt.ItemIsSelectable
+    flags |= QtCore.Qt.ItemIsEnabled
+    flags |= QtCore.Qt.ItemIsDragEnabled
+    flags |= QtCore.Qt.ItemIsDropEnabled
+
+    return flags
+
+  def sort(self, Ncol, order):
+    """Sort table by given column number.
+    """
+    try:
+      self.layoutAboutToBeChanged.emit()
+      self._data = self._data.sort_values(self._data.columns[Ncol], ascending=not order)
+      self.layoutChanged.emit()
+    except Exception as e:
+      print(e)
+
+  def addData(self, data):
+    self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(), self.rowCount())
+    self._data.loc[len(self._data)] = data
+    self.endInsertRows()
+
 
 
 
@@ -51,6 +107,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.setClickedEvent(self.btn_close, self.btnClose)
     self.setClickedEvent(self.btn_send, self.btnSend)
     self.setClickedEvent(self.btn_add, self.btnAdd)
+    self.setClickedEvent(self.btn_clear_rx_msg, self.btnClearRxMsg)
 
     self.check_open_canfd.stateChanged.connect(self.btnUpdate)  
     self.check_open_brs.stateChanged.connect(self.btnUpdate)  
@@ -64,6 +121,17 @@ class TabCAN(QWidget, Ui_CAN):
     self.loadSendMsg()
 
     self.table_can_tx.resizeColumnsToContents()
+
+
+    self.dataframe = pd.DataFrame(columns=['   Time   ','   ID   ', "Tx/Rx", "    Type    ", "DLC", "Data"])
+    self.tm = TableModel(self.dataframe)
+    self.tm.rowsInserted.connect(lambda: QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom))
+    self.view_can_rx.setModel(self.tm)
+    self.view_can_rx.setSelectionBehavior(QAbstractItemView.SelectRows)
+    self.view_can_rx.resizeColumnsToContents()
+    self.view_can_rx.horizontalHeader().setStretchLastSection(True)
+    # self.view_can_rx.resizeRowsToContents()
+
 
   def btnUpdate(self):
     
@@ -213,6 +281,10 @@ class TabCAN(QWidget, Ui_CAN):
       self.log.println("Not Connected")
     self.btnUpdate()
 
+  def btnClearRxMsg(self):
+    self.table_can_rx.clearContents()
+    self.table_can_rx.setRowCount(0)
+
   def loadConfig(self):        
     try:
       if self.config_item['can_open_fd'] == "True":
@@ -291,5 +363,80 @@ class TabCAN(QWidget, Ui_CAN):
 
         writer.writerow(out_line)      
 
+  def receiveCanMsg(self, packet: CmdPacket):
+    can_msg = CmdCANPacket(packet)
+    
+    msg_item = []
+    msg_item.append(str(can_msg.timestamp))
+    msg_item.append(str(hex(can_msg.id)))
+    msg_item.append("rx")
+
+    if can_msg.id_type == 0:
+      frame_str = "STD "
+    else:
+      frame_str = "EXT "
+
+    if can_msg.frame == CAN_CLASSIC:
+      frame_str += ""
+    elif can_msg.frame == CAN_FD_NO_BRS:
+      frame_str += "FD"
+    else:
+      frame_str += "FD BRS"
+    msg_item.append(frame_str)
+
+    msg_item.append(self.dlc_str[can_msg.dlc])
+    msg_item.append(can_msg.data[:can_msg.length].hex(" "))
+
+    # self.dataframe.append(['1', '2'])
+    # self.dataframe.loc[len(self.dataframe)] = list_row
+    # self.view_can_rx.setModel(TableModel(self.dataframe))
+    # self.tm.insertRows(self.view_can_rx.currentIndex().row(), 1, self.view_can_rx.currentIndex(), None)
+    self.tm.addData(msg_item)
+    return
+    
+    
+    row_pos = self.table_can_rx.rowCount()
+    self.table_can_rx.insertRow(row_pos)
+    
+    item = QTableWidgetItem(str(can_msg.timestamp))
+    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    self.table_can_rx.setItem(row_pos, 0, item)
+
+    item = QTableWidgetItem(str(hex(can_msg.id)))
+    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    self.table_can_rx.setItem(row_pos, 1, item)
+
+    item = QTableWidgetItem("rx")
+    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    self.table_can_rx.setItem(row_pos, 2, item)
+
+    if can_msg.id_type == 0:
+      frame_str = "STD "
+    else:
+      frame_str = "EXT "
+
+    item = QTableWidgetItem()
+    if can_msg.frame == CAN_CLASSIC:
+      frame_str += ""
+    elif can_msg.frame == CAN_FD_NO_BRS:
+      frame_str += "FD"
+    else:
+      frame_str += "FD BRS"
+    item.setText(frame_str)
+    self.table_can_rx.setItem(row_pos, 3, item)
+
+    item = QTableWidgetItem(self.dlc_str[can_msg.dlc])
+    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+    self.table_can_rx.setItem(row_pos, 4, item)
+
+    data_str = can_msg.data[:can_msg.length].hex(" ")
+    item = QTableWidgetItem(data_str)
+    self.table_can_rx.setItem(row_pos, 5, item)
+
+    if self.check_autoscroll.isChecked():
+      self.table_can_rx.scrollToBottom()
+
   def rxdEvent(self, packet: CmdPacket):
-    print("can event")
+    if packet.cmd == self.cmd_can.CMD_CAN_DATA:
+      if self.is_open == True:
+        self.receiveCanMsg(packet)

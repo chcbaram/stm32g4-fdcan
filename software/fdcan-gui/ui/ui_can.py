@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
     QFrame, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QSplitter, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QSpacerItem, QSplitter, QTableView, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_CAN(object):
     def setupUi(self, CAN):
@@ -220,6 +220,32 @@ class Ui_CAN(object):
 
         self.verticalLayout.addWidget(self.table_can_rx)
 
+        self.view_can_rx = QTableView(self.frame)
+        self.view_can_rx.setObjectName(u"view_can_rx")
+
+        self.verticalLayout.addWidget(self.view_can_rx)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(-1, 0, -1, -1)
+        self.check_autoscroll = QCheckBox(self.frame)
+        self.check_autoscroll.setObjectName(u"check_autoscroll")
+        self.check_autoscroll.setChecked(True)
+
+        self.horizontalLayout_4.addWidget(self.check_autoscroll)
+
+        self.btn_clear_rx_msg = QPushButton(self.frame)
+        self.btn_clear_rx_msg.setObjectName(u"btn_clear_rx_msg")
+
+        self.horizontalLayout_4.addWidget(self.btn_clear_rx_msg)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+
         self.splitter_2.addWidget(self.frame)
         self.frame_2 = QFrame(self.splitter_2)
         self.frame_2.setObjectName(u"frame_2")
@@ -388,17 +414,19 @@ class Ui_CAN(object):
         self.label_7.setText(QCoreApplication.translate("CAN", u"MASK", None))
         self.pushButton.setText(QCoreApplication.translate("CAN", u"Set", None))
         ___qtablewidgetitem = self.table_can_rx.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"Time", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"  Time  ", None));
         ___qtablewidgetitem1 = self.table_can_rx.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("CAN", u"ID", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("CAN", u"     ID     ", None));
         ___qtablewidgetitem2 = self.table_can_rx.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("CAN", u"Tx/Tx", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("CAN", u"Tx/Rx", None));
         ___qtablewidgetitem3 = self.table_can_rx.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("CAN", u"Type", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("CAN", u"    Type    ", None));
         ___qtablewidgetitem4 = self.table_can_rx.horizontalHeaderItem(4)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("CAN", u"DLC", None));
         ___qtablewidgetitem5 = self.table_can_rx.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("CAN", u"Data", None));
+        self.check_autoscroll.setText(QCoreApplication.translate("CAN", u"Auto Scroll", None))
+        self.btn_clear_rx_msg.setText(QCoreApplication.translate("CAN", u"Clear", None))
         self.check_tx_extid.setText(QCoreApplication.translate("CAN", u"Ext.ID", None))
         self.check_tx_fd.setText(QCoreApplication.translate("CAN", u"FD", None))
         self.check_tx_brs.setText(QCoreApplication.translate("CAN", u"BRS", None))

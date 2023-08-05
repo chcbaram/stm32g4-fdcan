@@ -73,7 +73,7 @@ class DownFirm(QThread):
       self.log_sig.emit('file_len    : %d' % self.file_len)
       self.log_sig.emit('file_crc    : %s' % hex(firm_tag.fw_crc))
 
-      str_fmt = "I32s32sI"
+      str_fmt = "<I32s32sI"
       fmt_size = calcsize(str_fmt)
       firm_ver = unpack(str_fmt, self.file_buf[BOOT_SIZE_VER:BOOT_SIZE_VER+fmt_size])
 

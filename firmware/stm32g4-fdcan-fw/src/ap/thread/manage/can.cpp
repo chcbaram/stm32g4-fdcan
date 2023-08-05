@@ -67,9 +67,30 @@ bool canThreadupdate(void)
     if (canMsgAvailable(can_ch))
     {
       can_msg_t msg;
+      uint8_t buf[256];
+      data_t stamp;
+      uint8_t index;
+
       canMsgRead(can_ch, &msg);
 
-      cmdObj()->sendPacket(PKT_TYPE_CAN, CMD_CAN_DATA, OK, (uint8_t *)&msg, sizeof(msg)); 
+      is_rx_update = true;
+      stamp.u32D = millis();
+
+      index = 0;
+      buf[index++] = stamp.u8Data[0];
+      buf[index++] = stamp.u8Data[1];
+      buf[index++] = (uint8_t)msg.frame;
+      buf[index++] = (uint8_t)msg.id_type;
+      buf[index++] = (uint8_t)msg.dlc;
+      buf[index++] = (uint8_t)(msg.id >> 0);
+      buf[index++] = (uint8_t)(msg.id >> 8);
+      buf[index++] = (uint8_t)(msg.id >> 16);
+      buf[index++] = (uint8_t)(msg.id >> 24);
+      buf[index++] = (uint8_t)(msg.length);
+      for (int i=0; i<msg.length; i++)
+        buf[index++] = msg.data[i];
+
+      cmdObj()->sendPacket(PKT_TYPE_CAN, CMD_CAN_DATA, OK, buf, index); 
     }
   }
   if (is_open == true && usbIsOpen() == false)
@@ -122,10 +143,29 @@ bool canCmdClose(cmd_t *p_cmd)
 
 bool canCmdData(cmd_t *p_cmd)
 {
+  can_msg_t msg;
+
+  if (is_open != true)
+    return false;
+
+
   // USB -> CAN
   //
-  // is_tx_update = true;
-  // uartWrite(HW_UART_CH_RS485, p_cmd->packet.data, p_cmd->packet.length);
+  is_tx_update = true;
+
+  CanFrame_t  frame;
+  CanIdType_t id_type;
+  CanDlc_t    dlc;
+
+  frame   = (CanFrame_t )p_cmd->packet.data[0];
+  id_type = (CanIdType_t)p_cmd->packet.data[1];
+  dlc     = (CanDlc_t   )p_cmd->packet.data[2];
+
+  canMsgInit(&msg, frame, id_type, dlc);
+  for (int i=0; i<msg.length; i++)
+    msg.data[i] = p_cmd->packet.data[3+i];
+
+  canMsgWrite(can_ch, &msg, 10);
   return true;
 }
 

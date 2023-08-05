@@ -24,6 +24,22 @@ class CmdCANOpen:
     self.baud = 0
     self.baud_data = 0
 
+class CmdCANPacket:
+  def __init__(self, packet: CmdPacket):
+    super().__init__()
+    self.length = 0
+    self.data = bytearray(64)    
+
+    header_fmt = "<HBBBIB"
+    fmt_size = calcsize(header_fmt)
+    data = unpack(header_fmt, packet.data[:fmt_size])
+    self.timestamp  = data[0]
+    self.frame      = data[1]
+    self.id_type    = data[2]
+    self.dlc        = data[3]
+    self.id         = data[4]
+    self.length     = data[5]
+    self.data       = packet.data[fmt_size:fmt_size + self.length]
 
 class CmdCAN:
 

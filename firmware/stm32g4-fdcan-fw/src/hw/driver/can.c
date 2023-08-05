@@ -182,7 +182,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
       p_can->Init.ClockDivider          = FDCAN_CLOCK_DIV1;
       p_can->Init.FrameFormat           = frame_tbl[frame];
       p_can->Init.Mode                  = mode_tbl[mode];
-      p_can->Init.AutoRetransmission    = ENABLE;
+      p_can->Init.AutoRetransmission    = DISABLE;
       p_can->Init.TransmitPause         = ENABLE;
       p_can->Init.ProtocolException     = ENABLE;
       p_can->Init.NominalPrescaler      = p_baud_normal[baud].prescaler;
@@ -206,6 +206,8 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
                                           FDCAN_IT_BUS_OFF |
                                           FDCAN_IT_ERROR_WARNING |
                                           FDCAN_IT_ERROR_PASSIVE;
+
+      can_tbl[ch].err_code              = CAN_ERR_NONE;
       ret = true;
       break;
   }
@@ -544,6 +546,8 @@ void canRecovery(uint8_t ch)
   if(ch > CAN_MAX_CH) return;
   if (can_tbl[ch].is_open != true) return;
   
+  can_tbl[ch].err_code = CAN_ERR_NONE;
+
   HAL_FDCAN_Stop(&can_tbl[ch].hfdcan);
   HAL_FDCAN_Start(&can_tbl[ch].hfdcan);
 
@@ -1095,7 +1099,7 @@ void cliCan(cli_args_t *args)
     {
       can_msg_t msg;
 
-      if (millis()-pre_time >= 1000)
+      if (millis()-pre_time >= 1)
       {
         pre_time = millis();
 

@@ -95,6 +95,7 @@ typedef struct
   CanBaud_t  baud;
   CanBaud_t  baud_data;
 } can_info_t;
+
 typedef struct
 {
   uint32_t id;

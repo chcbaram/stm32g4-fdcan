@@ -57,7 +57,7 @@ class CmdBoot:
     if ret == True:
       err_code = packet.err_code
       if packet.err_code == 0:
-        str_fmt = "I32s32sI"
+        str_fmt = "<I32s32sI"
         fmt_size = calcsize(str_fmt)
         data = unpack(str_fmt, packet.data[:fmt_size])
         resp.boot.version_str = data[1].decode("utf-8")
