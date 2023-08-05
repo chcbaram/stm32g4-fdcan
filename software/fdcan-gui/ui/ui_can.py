@@ -192,34 +192,6 @@ class Ui_CAN(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
-        self.table_can_rx = QTableWidget(self.frame)
-        if (self.table_can_rx.columnCount() < 6):
-            self.table_can_rx.setColumnCount(6)
-        __qtablewidgetitem = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(4, __qtablewidgetitem4)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.table_can_rx.setHorizontalHeaderItem(5, __qtablewidgetitem5)
-        self.table_can_rx.setObjectName(u"table_can_rx")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.table_can_rx.sizePolicy().hasHeightForWidth())
-        self.table_can_rx.setSizePolicy(sizePolicy2)
-        self.table_can_rx.setAlternatingRowColors(True)
-        self.table_can_rx.setSelectionMode(QAbstractItemView.NoSelection)
-        self.table_can_rx.setSelectionBehavior(QAbstractItemView.SelectItems)
-        self.table_can_rx.horizontalHeader().setStretchLastSection(True)
-
-        self.verticalLayout.addWidget(self.table_can_rx)
-
         self.view_can_rx = QTableView(self.frame)
         self.view_can_rx.setObjectName(u"view_can_rx")
 
@@ -350,26 +322,26 @@ class Ui_CAN(object):
         self.table_can_tx = QTableWidget(self.frame_2)
         if (self.table_can_tx.columnCount() < 7):
             self.table_can_tx.setColumnCount(7)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.table_can_tx.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(0, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(1, __qtablewidgetitem7)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(2, __qtablewidgetitem8)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(3, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(4, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(5, __qtablewidgetitem11)
-        __qtablewidgetitem12 = QTableWidgetItem()
-        self.table_can_tx.setHorizontalHeaderItem(6, __qtablewidgetitem12)
+        self.table_can_tx.setHorizontalHeaderItem(6, __qtablewidgetitem6)
         self.table_can_tx.setObjectName(u"table_can_tx")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.table_can_tx.sizePolicy().hasHeightForWidth())
-        self.table_can_tx.setSizePolicy(sizePolicy3)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.table_can_tx.sizePolicy().hasHeightForWidth())
+        self.table_can_tx.setSizePolicy(sizePolicy2)
         self.table_can_tx.setMinimumSize(QSize(0, 0))
         self.table_can_tx.setMaximumSize(QSize(16777215, 16777215))
         self.table_can_tx.setAlternatingRowColors(True)
@@ -413,18 +385,6 @@ class Ui_CAN(object):
         self.label_6.setText(QCoreApplication.translate("CAN", u"ID", None))
         self.label_7.setText(QCoreApplication.translate("CAN", u"MASK", None))
         self.pushButton.setText(QCoreApplication.translate("CAN", u"Set", None))
-        ___qtablewidgetitem = self.table_can_rx.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"  Time  ", None));
-        ___qtablewidgetitem1 = self.table_can_rx.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("CAN", u"     ID     ", None));
-        ___qtablewidgetitem2 = self.table_can_rx.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("CAN", u"Tx/Rx", None));
-        ___qtablewidgetitem3 = self.table_can_rx.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("CAN", u"    Type    ", None));
-        ___qtablewidgetitem4 = self.table_can_rx.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("CAN", u"DLC", None));
-        ___qtablewidgetitem5 = self.table_can_rx.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("CAN", u"Data", None));
         self.check_autoscroll.setText(QCoreApplication.translate("CAN", u"Auto Scroll", None))
         self.btn_clear_rx_msg.setText(QCoreApplication.translate("CAN", u"Clear", None))
         self.check_tx_extid.setText(QCoreApplication.translate("CAN", u"Ext.ID", None))
@@ -452,19 +412,19 @@ class Ui_CAN(object):
         self.btn_add.setText(QCoreApplication.translate("CAN", u"Add", None))
         self.btn_del.setText(QCoreApplication.translate("CAN", u"Del", None))
         self.btn_send.setText(QCoreApplication.translate("CAN", u"Send", None))
-        ___qtablewidgetitem6 = self.table_can_tx.horizontalHeaderItem(0)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("CAN", u"Sel", None));
-        ___qtablewidgetitem7 = self.table_can_tx.horizontalHeaderItem(1)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("CAN", u"ID", None));
-        ___qtablewidgetitem8 = self.table_can_tx.horizontalHeaderItem(2)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("CAN", u"Ext.ID", None));
-        ___qtablewidgetitem9 = self.table_can_tx.horizontalHeaderItem(3)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("CAN", u"FD", None));
-        ___qtablewidgetitem10 = self.table_can_tx.horizontalHeaderItem(4)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("CAN", u"BRS", None));
-        ___qtablewidgetitem11 = self.table_can_tx.horizontalHeaderItem(5)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("CAN", u"DLC", None));
-        ___qtablewidgetitem12 = self.table_can_tx.horizontalHeaderItem(6)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("CAN", u"Data", None));
+        ___qtablewidgetitem = self.table_can_tx.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"Sel", None));
+        ___qtablewidgetitem1 = self.table_can_tx.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("CAN", u"ID", None));
+        ___qtablewidgetitem2 = self.table_can_tx.horizontalHeaderItem(2)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("CAN", u"Ext.ID", None));
+        ___qtablewidgetitem3 = self.table_can_tx.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("CAN", u"FD", None));
+        ___qtablewidgetitem4 = self.table_can_tx.horizontalHeaderItem(4)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("CAN", u"BRS", None));
+        ___qtablewidgetitem5 = self.table_can_tx.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("CAN", u"DLC", None));
+        ___qtablewidgetitem6 = self.table_can_tx.horizontalHeaderItem(6)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("CAN", u"Data", None));
     # retranslateUi
 

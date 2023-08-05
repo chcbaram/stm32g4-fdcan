@@ -22,10 +22,74 @@ from lib.cmd import *
 from lib.cmd_can import *
 
 
+class TableThread(QThread):
+
+  def __init__(self, tm):
+    super().__init__()
+    self.working = True
+    self.request_exit = False    
+    self.mutex = QMutex()
+    self.msg_q = Queue()
+    self.tm = tm
+
+  def __del__(self):
+    pass
+    
+  def run(self):
+    while self.working:
+      try:
+        data =  self.msg_q.get(timeout=0.01)
+        self.receiveCanMsg(data)
+      except Exception as e:
+        time.sleep(0.001)
+      if self.request_exit == True:
+        self.working = False
+
+  def stop(self):
+    self.request_exit = True
+    self.quit()
+    while True:
+      self.sleep(0.1)
+      if self.working == False:
+        break
+
+  def addData(self, data):
+    packet = copy.deepcopy(data)
+    self.msg_q.put(packet)
+
+  def receiveCanMsg(self, packet: CmdPacket):
+    can_msg = CmdCANPacket(packet)
+    msg_item = []
+    msg_item.append(str(can_msg.timestamp))
+    msg_item.append(str(hex(can_msg.id)))
+    msg_item.append("rx")
+
+    if can_msg.id_type == 0:
+      frame_str = "STD "
+    else:
+      frame_str = "EXT "
+
+    if can_msg.frame == CAN_CLASSIC:
+      frame_str += ""
+    elif can_msg.frame == CAN_FD_NO_BRS:
+      frame_str += "FD"
+    else:
+      frame_str += "FD BRS"
+    msg_item.append(frame_str)
+
+    # msg_item.append(self.dlc_str[can_msg.dlc])
+    msg_item.append("4")
+    msg_item.append(can_msg.data[:can_msg.length].hex(" "))
+    print(msg_item)
+    self.tm.addDataOnly(msg_item)
+    return
+
+
 class TableModel(QtCore.QAbstractTableModel):
   def __init__(self, data, parent=None):
     super(TableModel, self).__init__(parent)
     self._data = data
+    self.add_data_cnt = 0
 
   def rowCount(self, parent=None):
     return len(self._data.index)
@@ -74,6 +138,19 @@ class TableModel(QtCore.QAbstractTableModel):
     self._data.loc[len(self._data)] = data
     self.endInsertRows()
 
+  def addDataOnly(self, data):
+    self._data.loc[len(self._data)] = data
+    self.add_data_cnt += 1
+
+  def updateRows(self):
+    if self.add_data_cnt > 0:
+      self.beginInsertRows(QtCore.QModelIndex(), self.rowCount()-self.add_data_cnt+1, self.rowCount())
+      self.endInsertRows()
+      self.add_data_cnt = 0
+
+  def clear(self):
+    self._data = self._data[0:0].copy(deep=True)
+    self.layoutChanged.emit()
 
 
 
@@ -112,7 +189,6 @@ class TabCAN(QWidget, Ui_CAN):
     self.check_open_canfd.stateChanged.connect(self.btnUpdate)  
     self.check_open_brs.stateChanged.connect(self.btnUpdate)  
 
-    self.table_can_rx.resizeColumnsToContents()
     self.table_can_tx.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
     self.table_can_tx.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
     self.table_can_tx.itemChanged.connect(self.updateCanTxTable)
@@ -125,13 +201,31 @@ class TabCAN(QWidget, Ui_CAN):
 
     self.dataframe = pd.DataFrame(columns=['   Time   ','   ID   ', "Tx/Rx", "    Type    ", "DLC", "Data"])
     self.tm = TableModel(self.dataframe)
-    self.tm.rowsInserted.connect(lambda: QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom))
+    # self.tm.rowsInserted.connect(lambda: QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom))
+    self.tm.rowsInserted.connect(self.tableAutoScroll)
     self.view_can_rx.setModel(self.tm)
     self.view_can_rx.setSelectionBehavior(QAbstractItemView.SelectRows)
     self.view_can_rx.resizeColumnsToContents()
     self.view_can_rx.horizontalHeader().setStretchLastSection(True)
     # self.view_can_rx.resizeRowsToContents()
 
+    self.table_thread = TableThread(self.tm)    
+    self.table_thread.start()  
+
+    self.table_timer = QtCore.QTimer()
+    self.table_timer.setInterval(100)
+    self.table_timer.timeout.connect(self.tableUpdate)
+    self.table_timer.start()
+
+  def __del__(self):
+    self.table_thread.stop()
+
+  def tableAutoScroll(self):  
+    if self.check_autoscroll.isChecked():
+      QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom)
+
+  def tableUpdate(self):  
+    self.tm.updateRows()
 
   def btnUpdate(self):
     
@@ -282,8 +376,8 @@ class TabCAN(QWidget, Ui_CAN):
     self.btnUpdate()
 
   def btnClearRxMsg(self):
-    self.table_can_rx.clearContents()
-    self.table_can_rx.setRowCount(0)
+    self.view_can_rx.reset()
+    self.tm.clear()
 
   def loadConfig(self):        
     try:
@@ -387,56 +481,12 @@ class TabCAN(QWidget, Ui_CAN):
     msg_item.append(self.dlc_str[can_msg.dlc])
     msg_item.append(can_msg.data[:can_msg.length].hex(" "))
 
-    # self.dataframe.append(['1', '2'])
-    # self.dataframe.loc[len(self.dataframe)] = list_row
-    # self.view_can_rx.setModel(TableModel(self.dataframe))
-    # self.tm.insertRows(self.view_can_rx.currentIndex().row(), 1, self.view_can_rx.currentIndex(), None)
     self.tm.addData(msg_item)
     return
     
     
-    row_pos = self.table_can_rx.rowCount()
-    self.table_can_rx.insertRow(row_pos)
-    
-    item = QTableWidgetItem(str(can_msg.timestamp))
-    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-    self.table_can_rx.setItem(row_pos, 0, item)
-
-    item = QTableWidgetItem(str(hex(can_msg.id)))
-    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-    self.table_can_rx.setItem(row_pos, 1, item)
-
-    item = QTableWidgetItem("rx")
-    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-    self.table_can_rx.setItem(row_pos, 2, item)
-
-    if can_msg.id_type == 0:
-      frame_str = "STD "
-    else:
-      frame_str = "EXT "
-
-    item = QTableWidgetItem()
-    if can_msg.frame == CAN_CLASSIC:
-      frame_str += ""
-    elif can_msg.frame == CAN_FD_NO_BRS:
-      frame_str += "FD"
-    else:
-      frame_str += "FD BRS"
-    item.setText(frame_str)
-    self.table_can_rx.setItem(row_pos, 3, item)
-
-    item = QTableWidgetItem(self.dlc_str[can_msg.dlc])
-    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-    self.table_can_rx.setItem(row_pos, 4, item)
-
-    data_str = can_msg.data[:can_msg.length].hex(" ")
-    item = QTableWidgetItem(data_str)
-    self.table_can_rx.setItem(row_pos, 5, item)
-
-    if self.check_autoscroll.isChecked():
-      self.table_can_rx.scrollToBottom()
-
   def rxdEvent(self, packet: CmdPacket):
     if packet.cmd == self.cmd_can.CMD_CAN_DATA:
       if self.is_open == True:
-        self.receiveCanMsg(packet)
+        # self.receiveCanMsg(packet)
+        self.table_thread.addData(packet)
