@@ -212,10 +212,10 @@ bool canCmdSetFilter(cmd_t *p_cmd)
   memcpy(&can_filter_id1, &p_cmd->packet.data[2], 4);
   memcpy(&can_filter_id2, &p_cmd->packet.data[6], 4);
 
-  logPrintf("type    : %d\n", can_filter_type);
-  logPrintf("id_type : %d\n", can_filter_id_type);
-  logPrintf("id1     : 0x%X\n", can_filter_id1);
-  logPrintf("id2     : 0x%X\n", can_filter_id2);
+  // logPrintf("type    : %d\n", can_filter_type);
+  // logPrintf("id_type : %d\n", can_filter_id_type);
+  // logPrintf("id1     : 0x%X\n", can_filter_id1);
+  // logPrintf("id2     : 0x%X\n", can_filter_id2);
   
   canSetFilterType(can_filter_type);
   canConfigFilter(can_ch, 0, can_filter_id_type, can_filter_id1, can_filter_id2);
