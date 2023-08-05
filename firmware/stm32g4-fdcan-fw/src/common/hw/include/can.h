@@ -69,6 +69,12 @@ typedef enum
 
 typedef enum
 {
+  CAN_ID_MASK,
+  CAN_ID_RANGE
+} CanFilterType_t;
+
+typedef enum
+{
   CAN_ERR_NONE      = 0x00000000,
   CAN_ERR_PASSIVE   = 0x00000001,
   CAN_ERR_WARNING   = 0x00000002,
@@ -116,6 +122,8 @@ bool     canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, C
 bool     canIsOpen(uint8_t ch);
 void     canClose(uint8_t ch);
 bool     canGetInfo(uint8_t ch, can_info_t *p_info);
+bool     canSetFilterType(CanFilterType_t filter_type);
+bool     canGetFilterType(CanFilterType_t *p_filter_type);
 bool     canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask);
 CanDlc_t canGetDlc(uint8_t length);
 uint8_t  canGetLen(CanDlc_t dlc);

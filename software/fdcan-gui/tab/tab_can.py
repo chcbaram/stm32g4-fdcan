@@ -22,67 +22,7 @@ from lib.cmd import *
 from lib.cmd_can import *
 
 
-class TableThread(QThread):
 
-  def __init__(self, tm):
-    super().__init__()
-    self.working = True
-    self.request_exit = False    
-    self.mutex = QMutex()
-    self.msg_q = Queue()
-    self.tm = tm
-
-  def __del__(self):
-    pass
-    
-  def run(self):
-    while self.working:
-      try:
-        data =  self.msg_q.get(timeout=0.01)
-        self.receiveCanMsg(data)
-      except Exception as e:
-        time.sleep(0.001)
-      if self.request_exit == True:
-        self.working = False
-
-  def stop(self):
-    self.request_exit = True
-    self.quit()
-    while True:
-      self.sleep(0.1)
-      if self.working == False:
-        break
-
-  def addData(self, data):
-    packet = copy.deepcopy(data)
-    self.msg_q.put(packet)
-
-  def receiveCanMsg(self, packet: CmdPacket):
-    can_msg = CmdCANPacket(packet)
-    msg_item = []
-    msg_item.append(str(can_msg.timestamp))
-    msg_item.append(str(hex(can_msg.id)))
-    msg_item.append("rx")
-
-    if can_msg.id_type == 0:
-      frame_str = "STD "
-    else:
-      frame_str = "EXT "
-
-    if can_msg.frame == CAN_CLASSIC:
-      frame_str += ""
-    elif can_msg.frame == CAN_FD_NO_BRS:
-      frame_str += "FD"
-    else:
-      frame_str += "FD BRS"
-    msg_item.append(frame_str)
-
-    # msg_item.append(self.dlc_str[can_msg.dlc])
-    msg_item.append("4")
-    msg_item.append(can_msg.data[:can_msg.length].hex(" "))
-    print(msg_item)
-    self.tm.addDataOnly(msg_item)
-    return
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -170,6 +110,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.cmd_can = CmdCAN(cmd)    
     self.config_item = config_item
     self.log = syslog
+    self.can_filter = CmdCANFilter()
 
     self.combo_open_rate_normal.clear()
     self.combo_open_rate_data.clear()
@@ -184,7 +125,10 @@ class TabCAN(QWidget, Ui_CAN):
     self.setClickedEvent(self.btn_close, self.btnClose)
     self.setClickedEvent(self.btn_send, self.btnSend)
     self.setClickedEvent(self.btn_add, self.btnAdd)
+    self.setClickedEvent(self.btn_del, self.btnDel)
     self.setClickedEvent(self.btn_clear_rx_msg, self.btnClearRxMsg)
+    self.setClickedEvent(self.btn_filter_set, self.btnFilterSet)
+
 
     self.check_open_canfd.stateChanged.connect(self.btnUpdate)  
     self.check_open_brs.stateChanged.connect(self.btnUpdate)  
@@ -192,7 +136,6 @@ class TabCAN(QWidget, Ui_CAN):
     self.table_can_tx.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
     self.table_can_tx.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
     self.table_can_tx.itemChanged.connect(self.updateCanTxTable)
-
     self.btnUpdate()
     self.loadSendMsg()
 
@@ -209,22 +152,25 @@ class TabCAN(QWidget, Ui_CAN):
     self.view_can_rx.horizontalHeader().setStretchLastSection(True)
     # self.view_can_rx.resizeRowsToContents()
 
-    self.table_thread = TableThread(self.tm)    
-    self.table_thread.start()  
-
     self.table_timer = QtCore.QTimer()
-    self.table_timer.setInterval(100)
+    self.table_timer.setInterval(500)
     self.table_timer.timeout.connect(self.tableUpdate)
     self.table_timer.start()
 
   def __del__(self):
-    self.table_thread.stop()
+    return
 
   def tableAutoScroll(self):  
     if self.check_autoscroll.isChecked():
       QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom)
 
   def tableUpdate(self):  
+    if self.tm.rowCount() < 5000:
+      if self.table_timer.interval() > 100:
+        self.table_timer.setInterval(100)
+    else:
+      if self.table_timer.interval() < 500:
+        self.table_timer.setInterval(500)
     self.tm.updateRows()
 
   def btnUpdate(self):
@@ -240,12 +186,15 @@ class TabCAN(QWidget, Ui_CAN):
       self.check_open_brs.setEnabled(False)
       self.combo_open_rate_normal.setEnabled(False)
       self.combo_open_rate_data.setEnabled(False)
+      self.combo_open_mode.setEnabled(False)
     else:
       self.btn_open.setEnabled(True)
       self.btn_close.setEnabled(False)
 
       self.check_open_canfd.setEnabled(True)
       self.combo_open_rate_normal.setEnabled(True)
+      self.combo_open_mode.setEnabled(True)
+
       if self.check_open_canfd.isChecked():
         self.check_open_brs.setEnabled(True)
       else:
@@ -276,9 +225,53 @@ class TabCAN(QWidget, Ui_CAN):
     return cell_widget
 
   def btnSend(self):
-    pass
+    row_pos = self.table_can_tx.rowCount()
 
-  def btnAdd(self):
+    for i in range(row_pos):
+      sel = self.table_can_tx.cellWidget(i, self.can_tx_head["Sel"]).layout().itemAt(0).widget().isChecked()
+      if sel == False:
+        continue
+
+      fd = self.table_can_tx.cellWidget(i, self.can_tx_head["FD"]).layout().itemAt(0).widget().isChecked()
+      fd_brs = self.table_can_tx.cellWidget(i, self.can_tx_head["BRS"]).layout().itemAt(0).widget().isChecked()
+      ext_id = self.table_can_tx.cellWidget(i, self.can_tx_head["Ext.ID"]).layout().itemAt(0).widget().isChecked()
+      dlc = self.table_can_tx.cellWidget(i, self.can_tx_head["DLC"]).layout().itemAt(0).widget().currentIndex()
+      length = int(self.dlc_str[dlc])
+
+      can_msg = CmdCANPacket()
+      can_msg.id = int(self.table_can_tx.item(i, self.can_tx_head["ID"]).text(), 16)
+      
+      if fd == True and fd_brs == True:
+        can_msg.frame = CAN_FD_BRS  
+      elif fd == True and fd_brs == False:
+        can_msg.frame = CAN_FD_NO_BRS
+      else:
+        can_msg.frame = CAN_CLASSIC
+
+      can_msg.dlc = dlc
+      can_msg.length = length
+      if ext_id == True:
+        can_msg.id_type = CAN_EXT
+      else:
+        can_msg.id_type = CAN_STD
+
+      data_str = self.table_can_tx.item(i, self.can_tx_head["Data"]).text()
+      data_bytes = bytes.fromhex(data_str)
+      index = len(data_bytes)
+      can_msg.data[:index] = data_bytes[:index]
+      for i in range(index, length):
+        can_msg.data[i] = 0x00
+
+      self.cmd_can.send(can_msg)
+
+
+  def btnDel(self):
+    items = self.table_can_tx.selectedIndexes()
+    if len(items) > 0:
+      self.table_can_tx.removeRow(items[0].row())
+    return
+
+  def insertCanTxLine(self):
     row_pos = self.table_can_tx.rowCount()
     self.table_can_tx.insertRow(row_pos)
 
@@ -309,13 +302,29 @@ class TabCAN(QWidget, Ui_CAN):
 
     item = QTableWidgetItem("")
     self.table_can_tx.setItem(row_pos, self.can_tx_head["Data"], item)
+    return True
 
+
+  def btnAdd(self):
+    id_text = self.text_tx_id.text().replace("0x", "")
+    if len(id_text) == 0:
+      self.log.println("ID Empty")
+      return
+
+    if self.is_hex(id_text) == False:
+      self.log.println("ID Not Hex")
+      return
+
+    self.insertCanTxLine()
+    self.table_can_tx.scrollToBottom()
+    return True
 
 
   def updateCanTxTable(self, item):
     if item.column() == self.can_tx_head["ID"]:
-      if self.is_hex(item.text()):        
-        item.setText(item.text().upper())
+      item_text = item.text().replace("0x","")
+      if self.is_hex(item_text):        
+        item.setText(item_text.upper())
       else:
         self.log.println("Not Hex")
         item.setText("")
@@ -367,6 +376,14 @@ class TabCAN(QWidget, Ui_CAN):
       self.log.println("Not Connected")
     self.btnUpdate()
 
+    if self.is_open:
+      err_code, resp = self.cmd_can.getFilter(self.can_filter)
+      if err_code == OK:
+        self.log.printLog("getFilter()")
+        self.updateFromFilter()
+      else:
+        self.log.printLog("getFilter() Fail")
+
   def btnClose(self):  
     self.is_open = False
     if self.cmd.is_open:
@@ -378,6 +395,37 @@ class TabCAN(QWidget, Ui_CAN):
   def btnClearRxMsg(self):
     self.view_can_rx.reset()
     self.tm.clear()
+
+  def btnFilterSet(self):
+    self.updateToFilter()
+    if self.is_open:
+      err_code, resp = self.cmd_can.setFilter(self.can_filter)
+      if err_code == OK:
+        self.log.printLog("setFilter()")
+      else:
+        self.log.printLog("setFilter() Fail")    
+
+  def updateFromFilter(self):
+    self.combo_filter_type.setCurrentIndex(self.can_filter.type)
+    if self.can_filter.id_type == CAN_STD:
+      self.radio_filter_std.setChecked(True)
+      self.radio_filter_ext.setChecked(False)
+    else:
+      self.radio_filter_std.setChecked(False)
+      self.radio_filter_ext.setChecked(True)
+
+    self.line_filter_id1.setText(hex(self.can_filter.id1))
+    self.line_filter_id2.setText(hex(self.can_filter.id2))
+
+  def updateToFilter(self):
+    self.can_filter.type = self.combo_filter_type.currentIndex()
+    if self.radio_filter_std.isChecked():
+      self.can_filter.id_type = CAN_STD
+    else:
+      self.can_filter.id_type = CAN_EXT
+
+    self.can_filter.id1 = int(self.line_filter_id1.text().replace("0x", ""), 16)
+    self.can_filter.id2 = int(self.line_filter_id2.text().replace("0x", ""), 16)
 
   def loadConfig(self):        
     try:
@@ -424,7 +472,7 @@ class TabCAN(QWidget, Ui_CAN):
           first_line = False
           continue
 
-        self.btnAdd()
+        self.insertCanTxLine()
         row_pos = self.table_can_tx.rowCount() - 1
         self.table_can_tx.cellWidget(row_pos, 0).layout().itemAt(0).widget().setChecked(check[line[0]])
         self.table_can_tx.item(row_pos, 1).setText(line[1])
@@ -458,7 +506,8 @@ class TabCAN(QWidget, Ui_CAN):
         writer.writerow(out_line)      
 
   def receiveCanMsg(self, packet: CmdPacket):
-    can_msg = CmdCANPacket(packet)
+    can_msg = CmdCANPacket()
+    can_msg.setCmdPacket(packet)
     
     msg_item = []
     msg_item.append(str(can_msg.timestamp))
@@ -481,12 +530,11 @@ class TabCAN(QWidget, Ui_CAN):
     msg_item.append(self.dlc_str[can_msg.dlc])
     msg_item.append(can_msg.data[:can_msg.length].hex(" "))
 
-    self.tm.addData(msg_item)
+    self.tm.addDataOnly(msg_item)
     return
     
     
   def rxdEvent(self, packet: CmdPacket):
     if packet.cmd == self.cmd_can.CMD_CAN_DATA:
       if self.is_open == True:
-        # self.receiveCanMsg(packet)
-        self.table_thread.addData(packet)
+        self.receiveCanMsg(packet)

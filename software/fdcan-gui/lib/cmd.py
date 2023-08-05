@@ -236,10 +236,13 @@ class Cmd(QObject):
     if self.uart_port is not None:
       if self.uart_port.is_open == True:
         self.is_open = False
-        self.uart_port.cancel_read()
-        self.uart_port.cancel_write() 
-        self.uart_port.close()        
-        print('Uart::close()')
+        try:
+          self.uart_port.cancel_read()
+          self.uart_port.cancel_write() 
+          self.uart_port.close()        
+          print('Uart::close()')
+        except:
+          pass
 
   def send(self, type, cmd, err_code, data, length):
     index = 0

@@ -159,6 +159,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.btn_open)
 
+        self.btn_led = QPushButton(self.frame_2)
+        self.btn_led.setObjectName(u"btn_led")
+        sizePolicy2.setHeightForWidth(self.btn_led.sizePolicy().hasHeightForWidth())
+        self.btn_led.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_2.addWidget(self.btn_led)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_2)
 
@@ -260,6 +267,7 @@ class Ui_MainWindow(object):
         self.btn_connect.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.btn_syslog_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.btn_open.setText(QCoreApplication.translate("MainWindow", u"Open", None))
+        self.btn_led.setText(QCoreApplication.translate("MainWindow", u"LED", None))
         self.btn_down.setText(QCoreApplication.translate("MainWindow", u"Download", None))
         self.btn_down_stop.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
         self.btn_log_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))

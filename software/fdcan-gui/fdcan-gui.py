@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
     self.loadInit()
     self.loadConfig()
 
-    gui_ver = 'FDCAN-GUI 23-08-03'
+    gui_ver = 'FDCAN-GUI 23-08-05'
     
     self.log = LogWidget(self.ui.log_text)
     self.log.setTimeLog(True)
@@ -76,6 +76,7 @@ class MainWindow(QMainWindow):
 
     self.setClickedEvent(self.ui.btn_scan, self.btnScan)  
     self.setClickedEvent(self.ui.btn_open, self.btnOpen)  
+    self.setClickedEvent(self.ui.btn_led, self.btnLed)  
     self.setClickedEvent(self.ui.btn_connect, self.btnConnect)  
     self.setClickedEvent(self.ui.btn_down, self.btnDown)  
     self.setClickedEvent(self.ui.btn_down_stop, self.btnDownStop)  
@@ -216,6 +217,9 @@ class MainWindow(QMainWindow):
       self.updateFileList(fname)
       self.showFileInfo()
 
+  def btnLed(self):
+    err_code, resp = self.cmd_boot.ledToggle(100)
+
   def btnLogClear(self):
     self.log.clear()
 
@@ -241,7 +245,11 @@ class MainWindow(QMainWindow):
 
     self.log.printLog("BAUD : " + str(baud))
 
-    self.cmd.open(port, baud)
+    ret = self.cmd.open(port, baud)
+    if ret == False:
+      self.log.printLog("Uart Open Fail")
+      return
+
     time.sleep(0.1)
     if self.is_fdcan[index] == True:
       is_connected = False
@@ -336,8 +344,10 @@ class MainWindow(QMainWindow):
 
     if self.cmd.is_open and self.ui.combo_file.count() > 0:
       self.ui.btn_down.setEnabled(True)
+      self.ui.btn_led.setEnabled(True)
     else:
       self.ui.btn_down.setEnabled(False)
+      self.ui.btn_led.setEnabled(False)
 
     self.tab_rs485.btnUpdate()
 

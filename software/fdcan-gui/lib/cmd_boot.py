@@ -41,6 +41,7 @@ class CmdBoot:
   BOOT_CMD_FW_JUMP      = 0x000C
   BOOT_CMD_FW_BEGIN     = 0x000D
   BOOT_CMD_FW_END       = 0x000E
+  BOOT_CMD_LED          = 0x0010
 
   def __init__(self, cmd):
     self.cmd = cmd
@@ -122,3 +123,10 @@ class CmdBoot:
     if ret == True:
       err_code = packet.err_code
     return err_code, None    
+
+  def ledToggle(self, timeout=500):
+    err_code = ERR_CMD_RX_TIMEOUT
+    ret, packet = self.cmd.sendCmdRxResp(self.BOOT_CMD_LED, None, 0, timeout)
+    if ret == True:
+      err_code = packet.err_code
+    return err_code, None

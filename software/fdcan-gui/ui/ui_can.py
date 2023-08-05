@@ -129,25 +129,25 @@ class Ui_CAN(object):
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(-1, 0, -1, -1)
-        self.comboBox = QComboBox(self.frame)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName(u"comboBox")
-        sizePolicy1.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
-        self.comboBox.setSizePolicy(sizePolicy1)
+        self.combo_filter_type = QComboBox(self.frame)
+        self.combo_filter_type.addItem("")
+        self.combo_filter_type.addItem("")
+        self.combo_filter_type.setObjectName(u"combo_filter_type")
+        sizePolicy1.setHeightForWidth(self.combo_filter_type.sizePolicy().hasHeightForWidth())
+        self.combo_filter_type.setSizePolicy(sizePolicy1)
 
-        self.horizontalLayout_3.addWidget(self.comboBox)
+        self.horizontalLayout_3.addWidget(self.combo_filter_type)
 
-        self.radioButton = QRadioButton(self.frame)
-        self.radioButton.setObjectName(u"radioButton")
-        self.radioButton.setChecked(True)
+        self.radio_filter_std = QRadioButton(self.frame)
+        self.radio_filter_std.setObjectName(u"radio_filter_std")
+        self.radio_filter_std.setChecked(True)
 
-        self.horizontalLayout_3.addWidget(self.radioButton)
+        self.horizontalLayout_3.addWidget(self.radio_filter_std)
 
-        self.radioButton_2 = QRadioButton(self.frame)
-        self.radioButton_2.setObjectName(u"radioButton_2")
+        self.radio_filter_ext = QRadioButton(self.frame)
+        self.radio_filter_ext.setObjectName(u"radio_filter_ext")
 
-        self.horizontalLayout_3.addWidget(self.radioButton_2)
+        self.horizontalLayout_3.addWidget(self.radio_filter_ext)
 
         self.line_4 = QFrame(self.frame)
         self.line_4.setObjectName(u"line_4")
@@ -161,29 +161,29 @@ class Ui_CAN(object):
 
         self.horizontalLayout_3.addWidget(self.label_6)
 
-        self.lineEdit = QLineEdit(self.frame)
-        self.lineEdit.setObjectName(u"lineEdit")
-        sizePolicy1.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-        self.lineEdit.setSizePolicy(sizePolicy1)
+        self.line_filter_id1 = QLineEdit(self.frame)
+        self.line_filter_id1.setObjectName(u"line_filter_id1")
+        sizePolicy1.setHeightForWidth(self.line_filter_id1.sizePolicy().hasHeightForWidth())
+        self.line_filter_id1.setSizePolicy(sizePolicy1)
 
-        self.horizontalLayout_3.addWidget(self.lineEdit)
+        self.horizontalLayout_3.addWidget(self.line_filter_id1)
 
         self.label_7 = QLabel(self.frame)
         self.label_7.setObjectName(u"label_7")
 
         self.horizontalLayout_3.addWidget(self.label_7)
 
-        self.lineEdit_2 = QLineEdit(self.frame)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
-        sizePolicy1.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_2.setSizePolicy(sizePolicy1)
+        self.line_filter_id2 = QLineEdit(self.frame)
+        self.line_filter_id2.setObjectName(u"line_filter_id2")
+        sizePolicy1.setHeightForWidth(self.line_filter_id2.sizePolicy().hasHeightForWidth())
+        self.line_filter_id2.setSizePolicy(sizePolicy1)
 
-        self.horizontalLayout_3.addWidget(self.lineEdit_2)
+        self.horizontalLayout_3.addWidget(self.line_filter_id2)
 
-        self.pushButton = QPushButton(self.frame)
-        self.pushButton.setObjectName(u"pushButton")
+        self.btn_filter_set = QPushButton(self.frame)
+        self.btn_filter_set.setObjectName(u"btn_filter_set")
 
-        self.horizontalLayout_3.addWidget(self.pushButton)
+        self.horizontalLayout_3.addWidget(self.btn_filter_set)
 
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -377,14 +377,14 @@ class Ui_CAN(object):
         self.label_2.setText(QCoreApplication.translate("CAN", u"Data", None))
         self.btn_open.setText(QCoreApplication.translate("CAN", u"Open", None))
         self.btn_close.setText(QCoreApplication.translate("CAN", u"Close", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("CAN", u"MASK     ", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("CAN", u"RANGE", None))
+        self.combo_filter_type.setItemText(0, QCoreApplication.translate("CAN", u"MASK     ", None))
+        self.combo_filter_type.setItemText(1, QCoreApplication.translate("CAN", u"RANGE", None))
 
-        self.radioButton.setText(QCoreApplication.translate("CAN", u"STD", None))
-        self.radioButton_2.setText(QCoreApplication.translate("CAN", u"EXT", None))
+        self.radio_filter_std.setText(QCoreApplication.translate("CAN", u"STD", None))
+        self.radio_filter_ext.setText(QCoreApplication.translate("CAN", u"EXT", None))
         self.label_6.setText(QCoreApplication.translate("CAN", u"ID", None))
         self.label_7.setText(QCoreApplication.translate("CAN", u"MASK", None))
-        self.pushButton.setText(QCoreApplication.translate("CAN", u"Set", None))
+        self.btn_filter_set.setText(QCoreApplication.translate("CAN", u"Set", None))
         self.check_autoscroll.setText(QCoreApplication.translate("CAN", u"Auto Scroll", None))
         self.btn_clear_rx_msg.setText(QCoreApplication.translate("CAN", u"Clear", None))
         self.check_tx_extid.setText(QCoreApplication.translate("CAN", u"Ext.ID", None))

@@ -17,6 +17,7 @@
 #define BOOT_CMD_FW_JUMP                0x000C
 #define BOOT_CMD_FW_BEGIN               0x000D
 #define BOOT_CMD_FW_END                 0x000E
+#define BOOT_CMD_LED                    0x0010
 
 
 typedef struct
@@ -338,6 +339,19 @@ static void bootFirmEnd(cmd_t *p_cmd)
   cmdSendResp(p_cmd, p_cmd->packet.cmd, err_code, NULL, 0);
 }
 
+static void bootLedToggle(cmd_t *p_cmd)
+{
+  uint16_t err_code = CMD_OK;
+
+  ledOn(HW_LED_CH_RX);
+  ledOn(HW_LED_CH_TX);
+  delay(50);
+  ledOff(HW_LED_CH_RX);
+  ledOff(HW_LED_CH_TX);
+
+  cmdSendResp(p_cmd, p_cmd->packet.cmd, err_code, NULL, 0);
+}
+
 void cmdBootUpdate(cmd_t *p_cmd)
 {
 }
@@ -391,6 +405,10 @@ bool cmdBootProcess(cmd_t *p_cmd)
 
     case BOOT_CMD_FW_END:
       bootFirmEnd(p_cmd);
+      break;
+
+    case BOOT_CMD_LED:
+      bootLedToggle(p_cmd);
       break;
 
     default:

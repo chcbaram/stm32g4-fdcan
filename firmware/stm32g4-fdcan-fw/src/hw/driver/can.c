@@ -109,7 +109,7 @@ typedef struct
 static can_tbl_t can_tbl[CAN_MAX_CH];
 
 static volatile uint32_t err_int_cnt = 0;
-
+static CanFilterType_t can_filter_type = CAN_ID_MASK;
 
 #ifdef _USE_HW_CLI
 static void cliCan(cli_args_t *args);
@@ -222,8 +222,7 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
     return false;
   }
 
-
-
+  canSetFilterType(CAN_ID_MASK);
   canConfigFilter(ch, 0, CAN_STD, 0x0000, 0x0000);
   canConfigFilter(ch, 0, CAN_EXT, 0x0000, 0x0000);
 
@@ -317,6 +316,18 @@ uint8_t canGetLen(CanDlc_t dlc)
   return dlc_len_tbl[(int)dlc];
 }
 
+bool canSetFilterType(CanFilterType_t filter_type)
+{
+  can_filter_type = filter_type;
+  return true;
+}
+
+bool canGetFilterType(CanFilterType_t *p_filter_type)
+{
+  *p_filter_type = can_filter_type;
+  return true;
+}
+
 bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask)
 {
   bool ret = false;
@@ -345,7 +356,10 @@ bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id
   }
 
   sFilterConfig.FilterIndex   = index;
-  sFilterConfig.FilterType    = FDCAN_FILTER_MASK;
+  if (can_filter_type == CAN_ID_MASK)
+    sFilterConfig.FilterType    = FDCAN_FILTER_MASK;
+  else
+    sFilterConfig.FilterType    = FDCAN_FILTER_RANGE;
   sFilterConfig.FilterID1     = id;
   sFilterConfig.FilterID2     = id_mask;
 

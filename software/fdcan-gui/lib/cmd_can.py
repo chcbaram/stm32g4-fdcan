@@ -14,6 +14,11 @@ CAN_CLASSIC   = 0
 CAN_FD_NO_BRS = 1
 CAN_FD_BRS    = 2
 
+CAN_STD       = 0
+CAN_EXT       = 1
+
+CAN_ID_MASK   = 0
+CAN_ID_RANGE  = 1
 
 
 class CmdCANOpen:
@@ -24,12 +29,28 @@ class CmdCANOpen:
     self.baud = 0
     self.baud_data = 0
 
+class CmdCANFilter:
+  def __init__(self):
+    super().__init__()  
+    self.type = 0
+    self.id_type = 0
+    self.id1 = 0
+    self.id2 = 0
+
 class CmdCANPacket:
-  def __init__(self, packet: CmdPacket):
+  def __init__(self):
     super().__init__()
     self.length = 0
     self.data = bytearray(64)    
 
+    self.timestamp  = 0
+    self.frame      = 0
+    self.id_type    = 0
+    self.dlc        = 0
+    self.id         = 0
+    self.length     = 0
+
+  def setCmdPacket(self, packet: CmdPacket):
     header_fmt = "<HBBBIB"
     fmt_size = calcsize(header_fmt)
     data = unpack(header_fmt, packet.data[:fmt_size])
@@ -41,11 +62,15 @@ class CmdCANPacket:
     self.length     = data[5]
     self.data       = packet.data[fmt_size:fmt_size + self.length]
 
+
 class CmdCAN:
 
   CMD_CAN_OPEN        = 0x0110
   CMD_CAN_CLOSE       = 0x0111
   CMD_CAN_DATA        = 0x0112
+  CMD_CAN_ERR_INFO    = 0x0113
+  CMD_CAN_SET_FILTER  = 0x0114
+  CMD_CAN_GET_FILTER  = 0x0115
 
 
   def __init__(self, cmd):
@@ -73,10 +98,46 @@ class CmdCAN:
       err_code = packet.err_code
     return err_code, None
 
-  def send(self, send_buf, timeout=500):
+  def send(self, packet: CmdCANPacket, timeout=500):
     err_code = OK
-    if len(send_buf) == 0:
-      return
-      
+
+    send_buf = pack("<HBBBIB", 
+                    packet.timestamp, 
+                    packet.frame,
+                    packet.id_type,
+                    packet.dlc,
+                    packet.id,
+                    packet.length)
+
+    send_buf += packet.data[0:packet.length]
+
     self.cmd.send(PKT_TYPE_CAN, self.CMD_CAN_DATA, OK, send_buf, len(send_buf))
     return err_code, None    
+
+  def getFilter(self, filter: CmdCANFilter, timeout=500):
+    err_code = ERR_CMD_RX_TIMEOUT
+    ret, packet = self.cmd.sendCmdRxResp(self.CMD_CAN_GET_FILTER, None, 0, timeout)
+    if ret == True:
+      err_code = packet.err_code
+      if packet.err_code == 0:
+        str_fmt = "<BBII"
+        fmt_size = calcsize(str_fmt)
+        data = unpack(str_fmt, packet.data[:fmt_size])
+        filter.type = data[0]
+        filter.id_type = data[1]
+        filter.id1 = data[2]
+        filter.id2 = data[3]
+    return err_code, None    
+
+  def setFilter(self, filter: CmdCANFilter, timeout=500):
+    err_code = ERR_CMD_RX_TIMEOUT
+    send_buf = pack("<BBII", 
+                    filter.type, 
+                    filter.id_type,
+                    filter.id1,
+                    filter.id2)
+    ret, packet = self.cmd.sendCmdRxResp(self.CMD_CAN_SET_FILTER, send_buf, len(send_buf), timeout)
+    if ret == True:
+      err_code = packet.err_code
+
+    return err_code, None        

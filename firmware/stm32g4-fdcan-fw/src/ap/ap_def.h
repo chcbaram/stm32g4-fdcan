@@ -30,5 +30,8 @@ typedef enum
 #define CMD_CAN_OPEN                0x0110
 #define CMD_CAN_CLOSE               0x0111
 #define CMD_CAN_DATA                0x0112
+#define CMD_CAN_ERR_INFO            0x0113
+#define CMD_CAN_SET_FILTER          0x0114
+#define CMD_CAN_GET_FILTER          0x0115
 
 #endif
