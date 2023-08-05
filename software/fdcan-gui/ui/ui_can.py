@@ -194,6 +194,11 @@ class Ui_CAN(object):
 
         self.view_can_rx = QTableView(self.frame)
         self.view_can_rx.setObjectName(u"view_can_rx")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.view_can_rx.sizePolicy().hasHeightForWidth())
+        self.view_can_rx.setSizePolicy(sizePolicy2)
 
         self.verticalLayout.addWidget(self.view_can_rx)
 
@@ -210,6 +215,18 @@ class Ui_CAN(object):
         self.btn_clear_rx_msg.setObjectName(u"btn_clear_rx_msg")
 
         self.horizontalLayout_4.addWidget(self.btn_clear_rx_msg)
+
+        self.line_2 = QFrame(self.frame)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.VLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout_4.addWidget(self.line_2)
+
+        self.btn_save_rx = QPushButton(self.frame)
+        self.btn_save_rx.setObjectName(u"btn_save_rx")
+
+        self.horizontalLayout_4.addWidget(self.btn_save_rx)
 
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -337,11 +354,11 @@ class Ui_CAN(object):
         __qtablewidgetitem6 = QTableWidgetItem()
         self.table_can_tx.setHorizontalHeaderItem(6, __qtablewidgetitem6)
         self.table_can_tx.setObjectName(u"table_can_tx")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.table_can_tx.sizePolicy().hasHeightForWidth())
-        self.table_can_tx.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.table_can_tx.sizePolicy().hasHeightForWidth())
+        self.table_can_tx.setSizePolicy(sizePolicy3)
         self.table_can_tx.setMinimumSize(QSize(0, 0))
         self.table_can_tx.setMaximumSize(QSize(16777215, 16777215))
         self.table_can_tx.setAlternatingRowColors(True)
@@ -387,6 +404,7 @@ class Ui_CAN(object):
         self.btn_filter_set.setText(QCoreApplication.translate("CAN", u"Set", None))
         self.check_autoscroll.setText(QCoreApplication.translate("CAN", u"Auto Scroll", None))
         self.btn_clear_rx_msg.setText(QCoreApplication.translate("CAN", u"Clear", None))
+        self.btn_save_rx.setText(QCoreApplication.translate("CAN", u"Save", None))
         self.check_tx_extid.setText(QCoreApplication.translate("CAN", u"Ext.ID", None))
         self.check_tx_fd.setText(QCoreApplication.translate("CAN", u"FD", None))
         self.check_tx_brs.setText(QCoreApplication.translate("CAN", u"BRS", None))
