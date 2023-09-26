@@ -338,16 +338,16 @@ class MainWindow(QMainWindow):
     if self.cmd.is_open:
       self.ui.btn_scan.setEnabled(False)
       self.ui.combo_device.setEnabled(False)
+      self.ui.btn_led.setEnabled(True)
     else:
       self.ui.btn_scan.setEnabled(True)   
       self.ui.combo_device.setEnabled(True)
+      self.ui.btn_led.setEnabled(False)
 
     if self.cmd.is_open and self.ui.combo_file.count() > 0:
       self.ui.btn_down.setEnabled(True)
-      self.ui.btn_led.setEnabled(True)
     else:
       self.ui.btn_down.setEnabled(False)
-      self.ui.btn_led.setEnabled(False)
 
     self.tab_rs485.btnUpdate()
 
