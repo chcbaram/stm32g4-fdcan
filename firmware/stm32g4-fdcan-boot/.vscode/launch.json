@@ -5,6 +5,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "cwd": "${workspaceFolder}",
+      "executable": "./build/stm32g4-fdcan-boot.elf",
+      "name": "Debug with PyOCD",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "showDevDebugOutput": "none",
+      "servertype": "pyocd",
+      "serverArgs": [
+        "--target", "stm32g431cbux",
+        "--pack","tools/Keil.STM32G4xx_DFP.1.5.0.pack"
+      ],      
+      "windows": {
+        "gdbPath": "${env:ARM_TOOLCHAIN_DIR}/arm-none-eabi-gdb.exe"
+      }
+    },
+    {
       "cwd": "${workspaceRoot}",
       "executable": "./build/stm32g4-fdcan-boot.elf",
       "name": "Debug with PICO",
