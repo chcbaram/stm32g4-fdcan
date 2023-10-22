@@ -75,6 +75,10 @@ target_compile_options(${EXECUTABLE} PRIVATE
 
   -fdata-sections
   -ffunction-sections
+  -fstack-usage 
+  -Wmissing-field-initializers
+  -Wuninitialized 
+  -Wenum-conversion
 
   -Wall
   -g3
