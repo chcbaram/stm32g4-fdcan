@@ -3,6 +3,9 @@
 ## STM32G4-FDCAN B/D
 ![fdcan](https://github.com/chcbaram/stm32g4-fdcan/assets/5537436/33ddd466-4d8d-4a24-b3e3-1fff5797aae6)
 
+## 보드 구매처 
+https://smartstore.naver.com/higenis/products/8811092758
+
 ## FDCAN-GUI
   - PySide6
 
