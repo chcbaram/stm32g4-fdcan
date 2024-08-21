@@ -261,10 +261,14 @@ class MainWindow(QMainWindow):
           self.ui.text_device_info.appendPlainText(self.device_info[index])    
           self.ui.text_device_info.appendPlainText("    ")
 
+          resp.boot.name_str = resp.boot.name_str.replace('\x00', '')
           self.ui.text_device_info.appendPlainText(resp.boot.name_str)
+          resp.boot.version_str = resp.boot.version_str.replace('\x00', '')
           self.ui.text_device_info.appendPlainText("    " + resp.boot.version_str)
 
+          resp.firm.name_str = resp.firm.name_str.replace('\x00', '')
           self.ui.text_device_info.appendPlainText(resp.firm.name_str)
+          resp.firm.version_str = resp.firm.version_str.replace('\x00', '')
           self.ui.text_device_info.appendPlainText("    " + resp.firm.version_str)     
           is_connected = True
           break
