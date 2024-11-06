@@ -16,3 +16,5 @@ firmware/stm32g4-fdcan-fw/prj/stm32cubeide/.settings/language.settings.xml
 firmware/stm32g4-fdcan-boot/prj/stm32cubeide/Debug/
 firmware/stm32g4-fdcan-boot/prj/stm32cubeide/.settings/language.settings.xml
 *.pyc
+config.ini
+can_send.csv

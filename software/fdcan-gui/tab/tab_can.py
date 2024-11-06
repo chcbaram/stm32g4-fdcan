@@ -22,9 +22,6 @@ from lib.cmd import *
 from lib.cmd_can import *
 
 
-
-
-
 class TableModel(QtCore.QAbstractTableModel):
   def __init__(self, data, parent=None):
     super(TableModel, self).__init__(parent)
@@ -98,7 +95,6 @@ class TableModel(QtCore.QAbstractTableModel):
     self.layoutChanged.emit()
 
 
-
 class TabCAN(QWidget, Ui_CAN):
   def __init__(self, ui_main :Ui_MainWindow, cmd, config_item, syslog):
     super().__init__()
@@ -129,6 +125,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.setClickedEvent(self.btn_open, self.btnOpen)
     self.setClickedEvent(self.btn_close, self.btnClose)
     self.setClickedEvent(self.btn_send, self.btnSend)
+    self.setClickedEvent(self.btn_repeat, self.btnRepeat)
     self.setClickedEvent(self.btn_add, self.btnAdd)
     self.setClickedEvent(self.btn_del, self.btnDel)
     self.setClickedEvent(self.btn_clear_rx_msg, self.btnClearRxMsg)
@@ -162,6 +159,16 @@ class TabCAN(QWidget, Ui_CAN):
     self.table_timer.setInterval(500)
     self.table_timer.timeout.connect(self.tableUpdate)
     self.table_timer.start()
+
+    # repeat toggle button
+    self.repeatIsToggled = False
+    self.repeatTimer = QtCore.QTimer()
+    self.repeatTimer.setInterval(1000)
+    self.repeatTimer.timeout.connect(self.onRepeatTimer)
+    
+    self.repeat_ms.minimumWidth = 110
+    self.repeat_ms.valueChanged.connect(self.onRepeatMSChange)
+
 
   def __del__(self):
     return
@@ -213,6 +220,7 @@ class TabCAN(QWidget, Ui_CAN):
         self.combo_open_rate_data.setEnabled(False)
 
     self.btn_send.setEnabled(self.is_open)
+    self.btn_repeat.setEnabled(self.is_open)
 
   def setClickedEvent(self, event_dst, event_func):
     event_dst.clicked.connect(lambda: self.btnClicked(event_dst, event_func))   
@@ -270,6 +278,29 @@ class TabCAN(QWidget, Ui_CAN):
 
       self.cmd_can.send(can_msg)
       self.addCanRxMsg(can_msg, "tx")
+
+
+  def onRepeatMSChange(self):
+    if (self.repeatTimer.isActive()):
+      self.btn_repeat.setText("Repeat")
+      self.repeatIsToggled = False
+      self.repeatTimer.stop()
+
+  def onRepeatTimer(self):
+    self.btnSend()
+      
+  def btnRepeat(self):
+    self.repeatIsToggled = not self.repeatIsToggled
+
+    val = self.repeat_ms.value()
+
+    if (self.repeatIsToggled):
+      self.btn_repeat.setText("Stop")
+      self.repeatTimer.setInterval(val)
+      self.repeatTimer.start()
+    else:
+      self.btn_repeat.setText("Repeat")
+      self.repeatTimer.stop()    
 
 
   def btnDel(self):
