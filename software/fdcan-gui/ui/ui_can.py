@@ -18,14 +18,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
     QFrame, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QSplitter, QTableView, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+    QSpacerItem, QSpinBox, QSplitter, QTableView,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_CAN(object):
     def setupUi(self, CAN):
         if not CAN.objectName():
             CAN.setObjectName(u"CAN")
-        CAN.resize(777, 632)
+        CAN.resize(864, 632)
         self.verticalLayout_3 = QVBoxLayout(CAN)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.splitter_2 = QSplitter(CAN)
@@ -326,8 +326,25 @@ class Ui_CAN(object):
 
         self.btn_send = QPushButton(self.frame_2)
         self.btn_send.setObjectName(u"btn_send")
+        self.btn_send.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.btn_send)
+
+        self.btn_repeat = QPushButton(self.frame_2)
+        self.btn_repeat.setObjectName(u"btn_repeat")
+        self.btn_repeat.setStyleSheet(u"")
+
+        self.horizontalLayout_2.addWidget(self.btn_repeat)
+
+        self.repeat_ms = QSpinBox(self.frame_2)
+        self.repeat_ms.setObjectName(u"repeat_ms")
+        self.repeat_ms.setEnabled(True)
+        self.repeat_ms.setMinimum(100)
+        self.repeat_ms.setMaximum(1000000)
+        self.repeat_ms.setSingleStep(100)
+        self.repeat_ms.setValue(1000)
+
+        self.horizontalLayout_2.addWidget(self.repeat_ms)
 
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -430,6 +447,8 @@ class Ui_CAN(object):
         self.btn_add.setText(QCoreApplication.translate("CAN", u"Add", None))
         self.btn_del.setText(QCoreApplication.translate("CAN", u"Del", None))
         self.btn_send.setText(QCoreApplication.translate("CAN", u"Send", None))
+        self.btn_repeat.setText(QCoreApplication.translate("CAN", u"Repeat", None))
+        self.repeat_ms.setSuffix(QCoreApplication.translate("CAN", u" ms", None))
         ___qtablewidgetitem = self.table_can_tx.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("CAN", u"Sel", None));
         ___qtablewidgetitem1 = self.table_can_tx.horizontalHeaderItem(1)
