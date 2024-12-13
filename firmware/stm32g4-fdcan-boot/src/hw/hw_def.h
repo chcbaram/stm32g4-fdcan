@@ -6,7 +6,7 @@
 #include "bsp.h"
 
 
-#define _DEF_FIRMWATRE_VERSION    "B230715R1"
+#define _DEF_FIRMWARE_VERSION    "B230715R1"
 #define _DEF_BOARD_NAME           "STM32G4-FDCAN-BOOT"
 
 
