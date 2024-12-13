@@ -1009,7 +1009,7 @@ void cliCan(cli_args_t *args)
     CanFrame_t frame = CAN_CLASSIC;
     CanBaud_t baud = CAN_1M;
     CanBaud_t baud_data = CAN_1M;
-    const char *mode_str[]  = {"CLAN_NORMAL", "CAN_MONITOR", "CAN_LOOPBACK"};
+    const char *mode_str[]  = {"CAN_NORMAL", "CAN_MONITOR", "CAN_LOOPBACK"};
     const char *frame_str[] = {"CAN_CLASSIC", "CAN_FD_NO_BRS", "CAN_FD_BRS"};
     const char *baud_str[]  = {"CAN_100K", "CAN_125K", "CAN_250K", "CAN_500K", "CAN_1M", "CAN_2M", "CAN_4M", "CAN_5M"};
 
