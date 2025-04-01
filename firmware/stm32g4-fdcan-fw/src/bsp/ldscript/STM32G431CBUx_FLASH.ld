@@ -117,11 +117,13 @@ SECTIONS
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
 
+    . = ALIGN(8);
     _sthread = .;
     KEEP (*(.thread))
     KEEP (*(.thread*))
     _ethread = .;
 
+    . = ALIGN(8);
     _scmd_process = .;
     KEEP (*(.cmd_process))
     KEEP (*(.cmd_process*))
