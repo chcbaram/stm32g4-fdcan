@@ -228,6 +228,7 @@ class Cmd(QObject):
     return self.is_open
 
   def stop(self):
+    self.close()
     self.rxd_thread.stop()
     print("cmd->stop()")
     return

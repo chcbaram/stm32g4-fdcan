@@ -377,6 +377,7 @@ class MainWindow(QMainWindow):
 
   def closeEvent(self, QCloseEvent):
     self.saveConfig()
+    self.cmd.close()
     if self.down_thread is not None:
       self.down_thread.stop()     
     QCloseEvent.accept()

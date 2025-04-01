@@ -23,10 +23,13 @@ from lib.cmd_can import *
 
 
 class TableModel(QtCore.QAbstractTableModel):
-  def __init__(self, data, parent=None):
+  def __init__(self, data, parent=None, max_rows=10000):
     super(TableModel, self).__init__(parent)
     self._data = data
     self.add_data_cnt = 0
+    self.data_index = 0
+    self.max_rows = max_rows  # 최대 행 수 저장
+
 
   def rowCount(self, parent=None):
     return len(self._data.index)
@@ -52,7 +55,8 @@ class TableModel(QtCore.QAbstractTableModel):
     if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
       return self._data.columns[rowcol]
     if orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
-      return rowcol
+      if rowcol < self.max_rows:
+        return self.data_index - len(self._data) + rowcol + 1
     return None
 
   def flags(self, index):
@@ -80,15 +84,26 @@ class TableModel(QtCore.QAbstractTableModel):
     self._data.loc[len(self._data)] = data
     self.endInsertRows()
 
-  def addDataOnly(self, data):
+  def addDataOnly(self, data):        
     self._data.loc[len(self._data)] = data
     self.add_data_cnt += 1
+    self.data_index += 1
 
-  def updateRows(self):
+  def updateRows(self):        
     if self.add_data_cnt > 0:
-      self.beginInsertRows(QtCore.QModelIndex(), self.rowCount()-self.add_data_cnt+1, self.rowCount())
-      self.endInsertRows()
-      self.add_data_cnt = 0
+        # 최대 행 수를 초과하는 만큼 이전 데이터 삭제
+        remove_count = max(0, len(self._data) - self.max_rows)
+        if remove_count > 0:
+            self.beginRemoveRows(QtCore.QModelIndex(), 0, remove_count - 1)
+            self._data = self._data.iloc[remove_count:].reset_index(drop=True)
+            self.endRemoveRows()
+        
+        # 새로 추가된 데이터 행 표시
+        last_index = len(self._data) - 1
+        start_index = max(0, last_index - self.add_data_cnt + 1)
+        self.beginInsertRows(QtCore.QModelIndex(), start_index, last_index)
+        self.endInsertRows()        
+        self.add_data_cnt = 0
 
   def clear(self):
     self._data = self._data[0:0].copy(deep=True)
@@ -112,6 +127,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.config_item = config_item
     self.log = syslog
     self.can_filter = CmdCANFilter()
+    self.req_clear_msg = False
 
     self.combo_open_rate_normal.clear()
     self.combo_open_rate_data.clear()
@@ -178,13 +194,19 @@ class TabCAN(QWidget, Ui_CAN):
       QtCore.QTimer.singleShot(0, self.view_can_rx.scrollToBottom)
 
   def tableUpdate(self):  
-    if self.tm.rowCount() < 5000:
-      if self.table_timer.interval() > 100:
-        self.table_timer.setInterval(100)
-    else:
-      if self.table_timer.interval() < 500:
-        self.table_timer.setInterval(500)
+    # if self.tm.rowCount() < 5000:
+    if self.table_timer.interval() > 100:
+      self.table_timer.setInterval(100)
+    # else:
+    #   if self.table_timer.interval() < 500:
+    #     self.table_timer.setInterval(500)
     self.tm.updateRows()
+    if self.req_clear_msg:
+      self.req_clear_msg = False
+      self.view_can_rx.reset()
+      self.tm.clear()
+
+
 
   def btnUpdate(self):
     
@@ -436,8 +458,7 @@ class TabCAN(QWidget, Ui_CAN):
     self.btnUpdate()
 
   def btnClearRxMsg(self):
-    self.view_can_rx.reset()
-    self.tm.clear()
+    self.req_clear_msg = True
 
   def btnFilterSet(self):
     self.updateToFilter()
@@ -573,7 +594,6 @@ class TabCAN(QWidget, Ui_CAN):
 
     msg_item.append(self.dlc_str[can_msg.dlc])
     msg_item.append(can_msg.data[:can_msg.length].hex(" "))
-
     self.tm.addDataOnly(msg_item)
     return
 
